@@ -25,6 +25,7 @@
 #include "vpx/vpx_codec.h"
 #include "vpx/vpx_integer.h"
 #include "vpx_ports/mem.h"
+#include "vpx_ports/vpx_timer.h"
 
 using libvpx_test::ACMRandom;
 using libvpx_test::Buffer;
@@ -389,6 +390,28 @@ class TransTestBase : public ::testing::TestWithParam<DctParam> {
     }
   }
 
+  void RunSpeedCheck(int times) {
+    Buffer<int16_t> input_block =
+      Buffer<int16_t>(size_, size_, 8, size_ == 4 ? 0 : 16);
+    ASSERT_TRUE(input_block.Init());
+
+    Buffer<tran_low_t> output_block =
+      Buffer<tran_low_t>(size_, size_, 0, 16);
+    ASSERT_TRUE(output_block.Init());
+
+    int i;
+    vpx_usec_timer timer;
+
+    vpx_usec_timer_start(&timer);
+    for (i = 0; i < times; ++i) {
+      ASM_REGISTER_STATE_CHECK(RunFwdTxfm(input_block, &output_block));
+    }
+    vpx_usec_timer_mark(&timer);
+
+    const int elapsed_time = static_cast<int>(vpx_usec_timer_elapsed(&timer));
+    printf("[%12d runs]: %d us\n", times, elapsed_time);
+  }
+
   FhtFunc fwd_txfm_;
   FhtFuncRef fwd_txfm_ref;
   IhtWithBdFunc inv_txfm_;
@@ -419,6 +442,12 @@ TEST_P(TransDCT, MemCheck) { RunMemCheck(); }
 
 TEST_P(TransDCT, InvAccuracyCheck) { RunInvAccuracyCheck(1); }
 
+TEST_P(TransDCT, DISABLED_Speed) {
+  RunSpeedCheck(10);
+  RunSpeedCheck(10000);
+  RunSpeedCheck(10000000);
+}
+
 /* TODO:(johannkoenig) Determine why these fail AccuracyCheck
   make_tuple(&fdct_wrapper<vpx_highbd_fdct32x32_c>,
   &highbd_idct_wrapper<vpx_highbd_idct32x32_1024_add_c>, 32, 0, VPX_BITS_12, 2),
@@ -433,6 +462,7 @@ TEST_P(TransDCT, InvAccuracyCheck) { RunInvAccuracyCheck(1); }
 */
 
 const DctParam c_dct_tests[] = {
+
 #if CONFIG_VP9_HIGHBITDEPTH
   make_tuple(&fdct_wrapper<vpx_highbd_fdct32x32_c>,
              &highbd_idct_wrapper<vpx_highbd_idct32x32_1024_add_c>, 32, 0,
@@ -585,6 +615,9 @@ INSTANTIATE_TEST_CASE_P(
     VSX, TransDCT,
     ::testing::Values(make_tuple(&fdct_wrapper<vpx_fdct4x4_c>,
                                  &idct_wrapper<vpx_idct4x4_16_add_vsx>, 4, 0,
+                                 VPX_BITS_8, 1),
+                      make_tuple(&fdct_wrapper<vpx_fdct4x4_vsx>,
+                                 &idct_wrapper<vpx_idct4x4_16_add_c>, 4, 0,
                                  VPX_BITS_8, 1)));
 #endif  // HAVE_VSX && !CONFIG_VP9_HIGHBITDEPTH &&
 
