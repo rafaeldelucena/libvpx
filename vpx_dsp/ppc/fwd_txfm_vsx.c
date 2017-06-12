@@ -81,10 +81,9 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       step[2] = in_high[1] - in_high[2];
       step[3] = in_high[0] - in_high[3];
 
-
       step[4] = in_high[4] + in_high[7];
       step[5] = in_high[5] + in_high[6];
-      step[6] = in_high[6] - in_high[6];
+      step[6] = in_high[5] - in_high[6];
       step[7] = in_high[4] - in_high[7];
 
       step[8] = in_high[8] + in_high[11];
