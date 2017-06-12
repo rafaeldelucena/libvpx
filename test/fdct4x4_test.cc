@@ -509,7 +509,7 @@ INSTANTIATE_TEST_CASE_P(
         make_tuple(&vp9_fht4x4_msa, &vp9_iht4x4_16_add_msa, 3, VPX_BITS_8)));
 #endif  // HAVE_MSA && !CONFIG_VP9_HIGHBITDEPTH && !CONFIG_EMULATE_HARDWARE
 
-#if HAVE_MSA && !CONFIG_EMULATE_HARDWARE
+#if HAVE_VSX && !CONFIG_EMULATE_HARDWARE
 #if CONFIG_VP9_HIGHBITDEPTH
 INSTANTIATE_TEST_CASE_P(
     VSX, Trans4x4DCT,
@@ -523,5 +523,5 @@ INSTANTIATE_TEST_CASE_P(VSX, Trans4x4DCT,
                                                      &vpx_idct4x4_16_add_c, 0,
                                                      VPX_BITS_8)));
 #endif  // CONFIG_VP9_HIGHBITDEPTH
-#endif  // HAVE_MSA && !CONFIG_EMULATE_HARDWARE
+#endif  // HAVE_VSX && !CONFIG_EMULATE_HARDWARE
 }  // namespace
