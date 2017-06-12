@@ -558,6 +558,10 @@ INSTANTIATE_TEST_CASE_P(VSX, TransDCT,
                         ::testing::Values(make_tuple(&vpx_fdct4x4_c,
                                                      &vpx_idct4x4_16_add_vsx, 4,
                                                      0, VPX_BITS_8)));
+INSTANTIATE_TEST_CASE_P(VSX, TransDCT,
+                        ::testing::Values(make_tuple(&vpx_fdct4x4_c,
+                                                     &vpx_fdct4x4_vsx, 4,
+                                                     0, VPX_BITS_8)));
 #endif  // HAVE_VSX && !CONFIG_VP9_HIGHBITDEPTH && !CONFIG_EMULATE_HARDWARE
 
 class TransHT : public TransTestBase, public ::testing::TestWithParam<HtParam> {
