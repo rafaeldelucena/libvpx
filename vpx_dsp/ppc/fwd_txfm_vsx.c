@@ -28,7 +28,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   for (pass = 0; pass < 2; ++pass) {
     tran_high_t in_high[16];    // canbe16
     tran_high_t step[16];       // canbe16
-    tran_high_t temp1, temp2;  // needs32
+    tran_high_t temp[16];  // needs32
     {
       // Load inputs.
       if (pass == 0) {
@@ -96,41 +96,46 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       step[14] = in_high[13] - in_high[14];
       step[15] = in_high[12] - in_high[15];
 
-      temp1 = (step[0] + step[1]) * cospi_16_64;
-      temp2 = (step[0] - step[1]) * cospi_16_64;
-      out[0] = (tran_low_t)fdct_round_shift(temp1);
-      out[2] = (tran_low_t)fdct_round_shift(temp2);
-      temp1 = step[2] * cospi_24_64 + step[3] * cospi_8_64;
-      temp2 = -step[2] * cospi_8_64 + step[3] * cospi_24_64;
-      out[1] = (tran_low_t)fdct_round_shift(temp1);
-      out[3] = (tran_low_t)fdct_round_shift(temp2);
+      temp[0] = (step[0] + step[1]) * cospi_16_64;
+      temp[1] = (step[0] - step[1]) * cospi_16_64;
+      temp[2] = step[2] * cospi_24_64 + step[3] * cospi_8_64;
+      temp[3] = -step[2] * cospi_8_64 + step[3] * cospi_24_64;
 
-      temp1 = (step[4] + step[5]) * cospi_16_64;
-      temp2 = (step[4] - step[5]) * cospi_16_64;
-      out[4] = (tran_low_t)fdct_round_shift(temp1);
-      out[6] = (tran_low_t)fdct_round_shift(temp2);
-      temp1 = step[6] * cospi_24_64 + step[7] * cospi_8_64;
-      temp2 = -step[6] * cospi_8_64 + step[7] * cospi_24_64;
-      out[5] = (tran_low_t)fdct_round_shift(temp1);
-      out[7] = (tran_low_t)fdct_round_shift(temp2);
+      temp[4] = (step[4] + step[5]) * cospi_16_64;
+      temp[5] = (step[4] - step[5]) * cospi_16_64;
+      temp[6] = step[6] * cospi_24_64 + step[7] * cospi_8_64;
+      temp[7] = -step[6] * cospi_8_64 + step[7] * cospi_24_64;
 
-      temp1 = (step[8] + step[9]) * cospi_16_64;
-      temp2 = (step[8] - step[9]) * cospi_16_64;
-      out[8] = (tran_low_t)fdct_round_shift(temp1);
-      out[10] = (tran_low_t)fdct_round_shift(temp2);
-      temp1 = step[10] * cospi_24_64 + step[11] * cospi_8_64;
-      temp2 = -step[10] * cospi_8_64 + step[11] * cospi_24_64;
-      out[9] = (tran_low_t)fdct_round_shift(temp1);
-      out[11] = (tran_low_t)fdct_round_shift(temp2);
+      temp[8] = (step[8] + step[9]) * cospi_16_64;
+      temp[9] = (step[8] - step[9]) * cospi_16_64;
+      temp[10] = step[10] * cospi_24_64 + step[11] * cospi_8_64;
+      temp[11] = -step[10] * cospi_8_64 + step[11] * cospi_24_64;
 
-      temp1 = (step[12] + step[13]) * cospi_16_64;
-      temp2 = (step[12] - step[13]) * cospi_16_64;
-      out[12] = (tran_low_t)fdct_round_shift(temp1);
-      out[14] = (tran_low_t)fdct_round_shift(temp2);
-      temp1 = step[14] * cospi_24_64 + step[15] * cospi_8_64;
-      temp2 = -step[14] * cospi_8_64 + step[15] * cospi_24_64;
-      out[13] = (tran_low_t)fdct_round_shift(temp1);
-      out[15] = (tran_low_t)fdct_round_shift(temp2);
+      temp[12] = (step[12] + step[13]) * cospi_16_64;
+      temp[13] = (step[12] - step[13]) * cospi_16_64;
+      temp[14] = step[14] * cospi_24_64 + step[15] * cospi_8_64;
+      temp[15] = -step[14] * cospi_8_64 + step[15] * cospi_24_64;
+
+      out[0] = (tran_low_t)fdct_round_shift(temp[0]);
+      out[1] = (tran_low_t)fdct_round_shift(temp[2]);
+      out[2] = (tran_low_t)fdct_round_shift(temp[1]);
+      out[3] = (tran_low_t)fdct_round_shift(temp[3]);
+
+      out[4] = (tran_low_t)fdct_round_shift(temp[4]);
+      out[5] = (tran_low_t)fdct_round_shift(temp[6]);
+      out[6] = (tran_low_t)fdct_round_shift(temp[5]);
+      out[7] = (tran_low_t)fdct_round_shift(temp[7]);
+
+      out[8] = (tran_low_t)fdct_round_shift(temp[8]);
+      out[9] = (tran_low_t)fdct_round_shift(temp[10]);
+      out[10] = (tran_low_t)fdct_round_shift(temp[9]);
+      out[11] = (tran_low_t)fdct_round_shift(temp[11]);
+
+      out[12] = (tran_low_t)fdct_round_shift(temp[12]);
+      out[13] = (tran_low_t)fdct_round_shift(temp[14]);
+      out[14] = (tran_low_t)fdct_round_shift(temp[13]);
+      out[15] = (tran_low_t)fdct_round_shift(temp[15]);
+
       // Do next column (which is a transposed row in second/horizontal pass)
     }
     // Setup in/out for next pass.
