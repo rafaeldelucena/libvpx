@@ -198,6 +198,9 @@ DSP_SRCS-$(HAVE_MSA)    += mips/fwd_txfm_msa.h
 DSP_SRCS-$(HAVE_MSA)    += mips/fwd_txfm_msa.c
 DSP_SRCS-$(HAVE_MSA)    += mips/fwd_dct32x32_msa.c
 endif  # CONFIG_VP9_ENCODER
+#TODO: check when enabling and if header is necessary
+#DSP_SRCS-$(HAVE_VSX)    += ppc/fwd_txfm_vsx.h
+DSP_SRCS-$(HAVE_VSX)    += ppc/fwd_txfm_vsx.c
 
 # inverse transform
 ifeq ($(CONFIG_VP9),yes)
