@@ -123,6 +123,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     }
     // Setup in/out for next pass.
     in_low = intermediate;
+    out = output;
   }
   {
     tran_high_t in_high[16];    // canbe16
@@ -218,8 +219,6 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 
       // Do next column (which is a transposed row in second/horizontal pass)
     }
-    // Setup in/out for next pass.
-    out = output;
   }
 
   {
