@@ -20,7 +20,6 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // as the first pass results are transposed, we transpose the columns (that
   // is the transposed rows) and transpose the results (so that it goes back
   // in normal/row positions).
-  int pass;
   // We need an intermediate buffer between passes.
   tran_low_t intermediate[16];
   const tran_low_t *in_low = NULL;
@@ -224,7 +223,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   }
 
   {
-    output[0] = (output[9] + 1) >> 2;
+    output[0] = (output[0] + 1) >> 2;
     output[1] = (output[1] + 1) >> 2;
     output[2] = (output[2] + 1) >> 2;
     output[3] = (output[3] + 1) >> 2;
