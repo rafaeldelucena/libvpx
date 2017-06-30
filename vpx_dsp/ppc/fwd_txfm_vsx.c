@@ -37,9 +37,6 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
         in_high[1] = input[1 * stride] * 16;
         in_high[2] = input[2 * stride] * 16;
         in_high[3] = input[3 * stride] * 16;
-        if (in_high[0]) {
-          ++in_high[0];
-        }
         in_high[4] = (input[0 * stride + 1]) * 16;
         in_high[5] = (input[1 * stride + 1]) * 16;
         in_high[6] = (input[2 * stride + 1]) * 16;
@@ -54,6 +51,10 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
         in_high[13] = (input[1 * stride + 3]) * 16;
         in_high[14] = (input[2 * stride + 3]) * 16;
         in_high[15] = (input[3 * stride + 3]) * 16;
+
+        if (in_high[0]) {
+          ++in_high[0];
+        }
       }
       // Transform.
       //step1 = vec_add(in_high1, in_high2);
@@ -121,55 +122,32 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     }
   }
   {
-    tran_high_t in_high[16];    // canbe16
     tran_high_t step[16];       // canbe16
     tran_high_t temp[16];  // needs32
 
     //int16x8_t step1, step2, step3, step4;
     //int16x8_t in_high1, in_high2;
     {
-      // Load inputs.
-      {
-        // in_high1
-        in_high[0] = intermediate[0];
-        in_high[4] = intermediate[1];
-        in_high[8] = intermediate[2];
-        in_high[12]= intermediate[3];
-        in_high[1] = intermediate[4];
-        in_high[5] = intermediate[5];
-        in_high[9] = intermediate[6];
-        in_high[13]= intermediate[7];
-
-        // in_high2
-        in_high[2] = intermediate[8];
-        in_high[6] = intermediate[9];
-        in_high[10]= intermediate[10];
-        in_high[14]= intermediate[11];
-        in_high[3] = intermediate[12];
-        in_high[7] = intermediate[13];
-        in_high[11]= intermediate[14];
-        in_high[15]= intermediate[15];
-      }
       // Transform.
       //step1 = vec_add(in_high1, in_high2);
-      step[0] = in_high[0] + in_high[3];
-      step[1] = in_high[1] + in_high[2];
-      step[4] = in_high[4] + in_high[7];
-      step[5] = in_high[5] + in_high[6];
-      step[8] = in_high[8] + in_high[11];
-      step[9] = in_high[9] + in_high[10];
-      step[12] = in_high[12] + in_high[15];
-      step[13] = in_high[13] + in_high[14];
+      step[0] = intermediate[0] + intermediate[12];
+      step[1] = intermediate[4] + intermediate[8];
+      step[4] = intermediate[1] + intermediate[13];
+      step[5] = intermediate[5] + intermediate[9];
+      step[8] = intermediate[2] + intermediate[14];
+      step[9] = intermediate[6] + intermediate[10];
+      step[12] = intermediate[3] + intermediate[15];
+      step[13] = intermediate[7] + intermediate[11];
 
       //step2 = vec_sub(in_high1, in_high2);
-      step[3] = in_high[0] - in_high[3];
-      step[2] = in_high[1] - in_high[2];
-      step[7] = in_high[4] - in_high[7];
-      step[6] = in_high[5] - in_high[6];
-      step[11] = in_high[8] - in_high[11];
-      step[10] = in_high[9] - in_high[10];
-      step[15] = in_high[12] - in_high[15];
-      step[14] = in_high[13] - in_high[14];
+      step[3] = intermediate[0] - intermediate[12];
+      step[2] = intermediate[4] - intermediate[8];
+      step[7] = intermediate[1] - intermediate[13];
+      step[6] = intermediate[5] - intermediate[9];
+      step[11] = intermediate[2] - intermediate[14];
+      step[10] = intermediate[6] - intermediate[10];
+      step[15] = intermediate[3] - intermediate[15];
+      step[14] = intermediate[7] - intermediate[11];
 
 
       temp[0] = (step[0] + step[1]) * cospi_16_64;
