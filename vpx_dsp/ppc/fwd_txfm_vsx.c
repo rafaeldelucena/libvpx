@@ -26,7 +26,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   const tran_low_t *in_low = NULL;
   tran_low_t *out = intermediate;
   // Do the two transform/transpose passes
-  for (pass = 0; pass < 2; ++pass) {
+  {
     tran_high_t in_high[16];    // canbe16
     tran_high_t step[16];       // canbe16
     tran_high_t temp[16];  // needs32
