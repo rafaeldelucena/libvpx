@@ -144,10 +144,10 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       step[15] = intermediate[3] - intermediate[15];
       step[14] = intermediate[7] - intermediate[11];
 
-      step[2] = -1 * step[2];
-      step[6] = -1 * step[6];
-      step[10] = -1 * step[10];
-      step[14] = -1 * step[14];
+      step[2] = step[2] * -1;
+      step[6] = step[6] * -1;
+      step[10] = step[10] * -1;
+      step[14] = step[14] * -1;
 
       tran_high_t x_00_0 = step[0] * cospi_16_64;
       tran_high_t x_02_0 = step[2] * cospi_24_64;
@@ -185,11 +185,11 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       tran_high_t x_13_1 = step[13] * cospi_16_64;
       tran_high_t x_15_1 = step[15] * cospi_24_64
 
-      x_01_1 = -1 * x_01_1;
-      x_05_1 = -1 * x_05_1;
-      x_09_1 = -1 * x_09_1;
-      x_12_1 = -1 * x_12_1;
-      x_15_1 = -1 * x_13_1;
+      x_01_1 = x_01_1 * -1;
+      x_05_1 = x_05_1 * -1;
+      x_09_1 = x_09_1 * -1;
+      x_12_1 = x_12_1 * -1;
+      x_15_1 = x_13_1 * -1;
 
       temp[0] = x_00_0 + x_00_1;
       temp[1] = x_02_0 + x_02_1;
