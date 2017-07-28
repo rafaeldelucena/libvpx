@@ -122,14 +122,10 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     }
   }
   {
-    tran_high_t step[16];       // canbe16
+    tran_high_t step[16];  // canbe16
     tran_high_t temp[16];  // needs32
-
-    //int16x8_t step1, step2, step3, step4;
-    //int16x8_t in_high1, in_high2;
     {
       // Transform.
-      //step1 = vec_add(in_high1, in_high2);
       step[0] = intermediate[0] + intermediate[12];
       step[1] = intermediate[4] + intermediate[8];
       step[4] = intermediate[1] + intermediate[13];
@@ -139,7 +135,6 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       step[12] = intermediate[3] + intermediate[15];
       step[13] = intermediate[7] + intermediate[11];
 
-      //step2 = vec_sub(in_high1, in_high2);
       step[3] = intermediate[0] - intermediate[12];
       step[2] = intermediate[4] - intermediate[8];
       step[7] = intermediate[1] - intermediate[13];
@@ -149,45 +144,89 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       step[15] = intermediate[3] - intermediate[15];
       step[14] = intermediate[7] - intermediate[11];
 
+      step[2] = -1 * step[2];
+      step[6] = -1 * step[6];
+      step[10] = -1 * step[10];
+      step[14] = -1 * step[14];
 
-      temp[0] = (step[0] + step[1]) * cospi_16_64;
-      temp[1] = (step[0] - step[1]) * cospi_16_64;
-      temp[2] = step[2] * cospi_24_64 + step[3] * cospi_8_64;
-      temp[3] = -step[2] * cospi_8_64 + step[3] * cospi_24_64;
+      tran_high_t x_00_0 = step[0] * cospi_16_64;
+      tran_high_t x_02_0 = step[2] * cospi_24_64;
+      tran_high_t x_01_0 = step[0] * cospi_16_64;
+      tran_high_t x_03_0 = step[2] * cospi_8_64;
+      tran_high_t x_04_0 = step[4] * cospi_16_64;
+      tran_high_t x_06_0 = step[6] * cospi_24_64;
+      tran_high_t x_05_0 = step[4] * cospi_16_64;
+      tran_high_t x_07_0 = step[6] * cospi_8_64;
 
-      temp[4] = (step[4] + step[5]) * cospi_16_64;
-      temp[5] = (step[4] - step[5]) * cospi_16_64;
-      temp[6] = step[6] * cospi_24_64 + step[7] * cospi_8_64;
-      temp[7] = -step[6] * cospi_8_64 + step[7] * cospi_24_64;
+      tran_high_t x_00_1 = step[1] * cospi_16_64;
+      tran_high_t x_02_1 = step[3] * cospi_8_64;
+      tran_high_t x_01_1 = step[1] * cospi_16_64;
+      tran_high_t x_03_1 = step[3] * cospi_24_64;
+      tran_high_t x_04_1 = step[5] * cospi_16_64;
+      tran_high_t x_06_1 = step[7] * cospi_8_64;
+      tran_high_t x_05_1 = step[5] * cospi_16_64;
+      tran_high_t x_07_1 = step[7] * cospi_24_64;
 
-      temp[8] = (step[8] + step[9]) * cospi_16_64;
-      temp[9] = (step[8] - step[9]) * cospi_16_64;
-      temp[10] = step[10] * cospi_24_64 + step[11] * cospi_8_64;
-      temp[11] = -step[10] * cospi_8_64 + step[11] * cospi_24_64;
+      tran_high_t x_08_0 = step[8] * cospi_16_64;
+      tran_high_t x_10_0 = step[10] * cospi_24_64;
+      tran_high_t x_09_0 = step[8] * cospi_16_64;
+      tran_high_t x_11_0 = step[10] * cospi_8_64;
+      tran_high_t x_12_0 = step[12] * cospi_16_64;
+      tran_high_t x_14_0 = step[14] * cospi_24_64;
+      tran_high_t x_13_0 = step[12] * cospi_16_64;
+      tran_high_t x_15_0 = step[14] * cospi_8_64;
 
-      temp[12] = (step[12] + step[13]) * cospi_16_64;
-      temp[13] = (step[12] - step[13]) * cospi_16_64;
-      temp[14] = step[14] * cospi_24_64 + step[15] * cospi_8_64;
-      temp[15] = -step[14] * cospi_8_64 + step[15] * cospi_24_64;
+      tran_high_t x_08_1 = step[9] * cospi_16_64;
+      tran_high_t x_10_1 = step[11] * cospi_8_64;
+      tran_high_t x_09_1 = step[9] * cospi_16_64;
+      tran_high_t x_11_1 = step[11] * cospi_24_64;
+      tran_high_t x_12_1 = step[13] * cospi_16_64;
+      tran_high_t x_14_1 = step[15] * cospi_8_64;
+      tran_high_t x_13_1 = step[13] * cospi_16_64;
+      tran_high_t x_15_1 = step[15] * cospi_24_64
+
+      x_01_1 = -1 * x_01_1;
+      x_05_1 = -1 * x_05_1;
+      x_09_1 = -1 * x_09_1;
+      x_12_1 = -1 * x_12_1;
+      x_15_1 = -1 * x_13_1;
+
+      temp[0] = x_00_0 + x_00_1;
+      temp[1] = x_02_0 + x_02_1;
+      temp[2] = x_01_0 + x_01_1;
+      temp[3] = x_03_0 + x_03_1;
+      temp[4] = x_04_0 + x_04_1;
+      temp[5] = x_06_0 + x_06_1;
+      temp[6] = x_05_0 + x_05_1;
+      temp[7] = x_07_0 + x_07_1;
+
+      temp[8] = x_08_0 + x_08_1;
+      temp[9] = x_10_0 + x_10_1;
+      temp[10] = x_09_0 + x_09_1;
+      temp[11] = x_11_0 + x_11_1;
+      temp[12] = x_12_0 + x_12_1;
+      temp[13] = x_14_0 + x_14_1;
+      temp[14] = x_13_0 + x_13_1;
+      temp[15] = x_15_0 + x_15_1;
 
       output[0] = (tran_low_t)fdct_round_shift(temp[0]);
-      output[1] = (tran_low_t)fdct_round_shift(temp[2]);
-      output[2] = (tran_low_t)fdct_round_shift(temp[1]);
+      output[1] = (tran_low_t)fdct_round_shift(temp[1]);
+      output[2] = (tran_low_t)fdct_round_shift(temp[2]);
       output[3] = (tran_low_t)fdct_round_shift(temp[3]);
 
       output[4] = (tran_low_t)fdct_round_shift(temp[4]);
-      output[5] = (tran_low_t)fdct_round_shift(temp[6]);
-      output[6] = (tran_low_t)fdct_round_shift(temp[5]);
+      output[5] = (tran_low_t)fdct_round_shift(temp[5]);
+      output[6] = (tran_low_t)fdct_round_shift(temp[6]);
       output[7] = (tran_low_t)fdct_round_shift(temp[7]);
 
       output[8] = (tran_low_t)fdct_round_shift(temp[8]);
-      output[9] = (tran_low_t)fdct_round_shift(temp[10]);
-      output[10] = (tran_low_t)fdct_round_shift(temp[9]);
+      output[9] = (tran_low_t)fdct_round_shift(temp[9]);
+      output[10] = (tran_low_t)fdct_round_shift(temp[10]);
       output[11] = (tran_low_t)fdct_round_shift(temp[11]);
 
       output[12] = (tran_low_t)fdct_round_shift(temp[12]);
-      output[13] = (tran_low_t)fdct_round_shift(temp[14]);
-      output[14] = (tran_low_t)fdct_round_shift(temp[13]);
+      output[13] = (tran_low_t)fdct_round_shift(temp[13]);
+      output[14] = (tran_low_t)fdct_round_shift(temp[14]);
       output[15] = (tran_low_t)fdct_round_shift(temp[15]);
 
       // Do next column (which is a transposed row in second/horizontal pass)
