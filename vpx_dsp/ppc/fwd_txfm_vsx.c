@@ -150,25 +150,69 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       step[14] = intermediate[7] - intermediate[11];
 
 
-      temp[0] = (step[0] + step[1]) * cospi_16_64;
-      temp[1] = step[2] * cospi_24_64 + step[3] * cospi_8_64;
-      temp[2] = (step[0] - step[1]) * cospi_16_64;
-      temp[3] = -step[2] * cospi_8_64 + step[3] * cospi_24_64;
+      tran_high_t x_0_0 = step[0] * cospi_16_64;
+      tran_high_t x_0_1 = step[1] * cospi_16_64;
+      temp[0] = x_0_0 + x_0_1;
 
-      temp[4] = (step[4] + step[5]) * cospi_16_64;
+      tran_high_t x_1_0 = step[2] * cospi_24_64;
+      tran_high_t x_1_1 = step[3] * cospi_8_64;
+      temp[1] = x_1_0 + x_1_1;
+
+      tran_high_t x_2_0 = step[0] * cospi_16_64;
+      tran_high_t x_2_1 = step[1] * cospi_16_64;
+      temp[2] = x_2_0 - x_2_1;
+
+      tran_high_t x_3_0 = -step[2] * cospi_8_64;
+      tran_high_t x_3_1 = step[3] * cospi_24_64;
+      temp[3] = x_3_0 + x_3_1;
+
+      tran_high_t x_4_0 = step[4] * cospi_16_64;
+      tran_high_t x_4_1 = step[5] * cospi_16_64;
+      temp[4] = x_4_0 + x_4_1;
+
+      tran_high_t x_5_0 = step[6] * cospi_24_64;
+      tran_high_t x_5_1 = step[7] * cospi_8_64;
       temp[5] = step[6] * cospi_24_64 + step[7] * cospi_8_64;
-      temp[6] = (step[4] - step[5]) * cospi_16_64;
-      temp[7] = -step[6] * cospi_8_64 + step[7] * cospi_24_64;
 
-      temp[8] = (step[8] + step[9]) * cospi_16_64;
-      temp[9] = step[10] * cospi_24_64 + step[11] * cospi_8_64;
-      temp[10] = (step[8] - step[9]) * cospi_16_64;
-      temp[11] = -step[10] * cospi_8_64 + step[11] * cospi_24_64;
+      tran_high_t x_6_0 = step[4] * cospi_16_64;
+      tran_high_t x_6_1 = step[5] * cospi_16_64;
+      temp[6] = x_6_0 - x_6_1;
 
-      temp[12] = (step[12] + step[13]) * cospi_16_64;
-      temp[13] = step[14] * cospi_24_64 + step[15] * cospi_8_64;
-      temp[14] = (step[12] - step[13]) * cospi_16_64;
-      temp[15] = -step[14] * cospi_8_64 + step[15] * cospi_24_64;
+      tran_high_t x_7_0 = -step[6] * cospi_8_64;
+      tran_high_t x_7_1 = step[7] * cospi_24_64;
+      temp[7] = x_7_0 + x_7_1;
+
+      tran_high_t x_8_0 = step[8] * cospi_16_64;
+      tran_high_t x_8_1 = step[9] * cospi_16_64;
+      temp[8] = x_8_0 + x_8_1;
+
+      tran_high_t x_9_0 = step[10] * cospi_24_64;
+      tran_high_t x_9_1 = step[11] * cospi_8_64;
+      temp[9] = x_9_0 + x_9_1;
+
+      tran_high_t x_10_0 = step[8] * cospi_16_64;
+      tran_high_t x_10_1 = step[9] * cospi_16_64;
+      temp[10] = x_10_0 - x_10_1;
+
+      tran_high_t x_11_0 = -step[10] * cospi_8_64;
+      tran_high_t x_11_1 = step[11] * cospi_24_64;
+      temp[11] = x_11_0 + x_11_1;
+
+      tran_high_t x_12_0 = step[12] * cospi_16_64;
+      tran_high_t x_12_1 = step[13] * cospi_16_64;
+      temp[12] = x_12_0 + x_12_1;
+
+      tran_high_t x_13_0 = step[14] * cospi_24_64;
+      tran_high_t x_13_1 = step[15] * cospi_8_64;
+      temp[13] = x_13_0 + x_13_1;
+
+      tran_high_t x_14_0 = step[12] * cospi_16_64;
+      tran_high_t x_14_1 = step[13] * cospi_16_64;
+      temp[14] = x_14_0 - x_14_1;
+
+      tran_high_t x_15_0 = -step[14] * cospi_8_64;
+      tran_high_t x_15_1 = step[15] * cospi_24_64;
+      temp[15] = x_15_0 + x_15_1;
 
       output[0] = (tran_low_t)fdct_round_shift(temp[0]);
       output[1] = (tran_low_t)fdct_round_shift(temp[1]);
