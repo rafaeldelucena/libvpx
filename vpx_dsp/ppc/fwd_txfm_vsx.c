@@ -15,8 +15,8 @@
 
 static INLINE int16x8_t fdct_vector_round_shift(int16x8_t input) {
   int16x8_t one = vec_splat_s16(1);
-  uint16x8_t dct_const_0 = vec_splat_s16(DCT_CONST_BITS - 1);
-  uint16x8_t dct_const_1 = vec_splat_s16(DCT_CONST_BITS);
+  uint16x8_t dct_const_0 = vec_splat_u16(DCT_CONST_BITS - 1);
+  uint16x8_t dct_const_1 = vec_splat_u16(DCT_CONST_BITS);
   int16x8_t tmp = vec_sl(one, dct_const_0);
   int16x8_t sum = vec_add(input, tmp);
   return vec_sr(sum, dct_const_1);
