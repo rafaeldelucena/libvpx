@@ -13,6 +13,17 @@
 #include "vpx_dsp/fwd_txfm.h"
 #include "vpx_dsp/ppc/types_vsx.h"
 
+///* Shift down with rounding */
+//#define ROUND_POWER_OF_TWO(value, n) (((value) + (1 << ((n)-1))) >> (n))
+//
+//static INLINE tran_high_t fdct_round_shift(tran_high_t input) {
+//  tran_high_t rv = ROUND_POWER_OF_TWO(input, DCT_CONST_BITS);
+//  // TODO(debargha, peter.derivaz): Find new bounds for this assert
+//  // and make the bounds consts.
+//  // assert(INT16_MIN <= rv && rv <= INT16_MAX);
+//  return rv;
+//}
+
 static INLINE int16x8_t fdct_vector_round_shift(int16x8_t input) {
   int16x8_t one = vec_splat_s16(1);
   uint16x8_t dct_const_0 = vec_splat_u16(DCT_CONST_BITS - 1);
