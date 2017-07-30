@@ -13,6 +13,15 @@
 #include "vpx_dsp/fwd_txfm.h"
 #include "vpx_dsp/ppc/types_vsx.h"
 
+static INLINE int16x8_t fdct_vector_round_shift(int16x8_t input) {
+  int16x8_t one = vec_splat_s16(1);
+  int16x8_t dct_const_0 = vec_splat_s16(DCT_CONST_BITS - 1);
+  int16x8_t dct_const_1 = vec_splat_s16(DCT_CONST_BITS);
+  int16x8_t tmp = vec_sl(one, dct_const_0);
+  int16x8_t sum = vec_add(input, tmp);
+  return vec_sr(sum, dct_const_1);
+}
+
 void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // The 2D transform is done with two passes which are actually pretty
   // similar. In the first one, we transform the columns and transpose
@@ -256,28 +265,31 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       int16x8_t temp0 = vec_add(a_0, a_1);
       int16x8_t temp1 = vec_add(a_2, a_3);
 
-      vec_vsx_st(temp0, 0, temp);
-      vec_vsx_st(temp1, 0, temp + (2 * stride));
+      //output[0] = (tran_low_t)fdct_round_shift(temp[0]);
+      //output[1] = (tran_low_t)fdct_round_shift(temp[1]);
+      //output[2] = (tran_low_t)fdct_round_shift(temp[2]);
+      //output[3] = (tran_low_t)fdct_round_shift(temp[3]);
 
-      output[0] = (tran_low_t)fdct_round_shift(temp[0]);
-      output[1] = (tran_low_t)fdct_round_shift(temp[1]);
-      output[2] = (tran_low_t)fdct_round_shift(temp[2]);
-      output[3] = (tran_low_t)fdct_round_shift(temp[3]);
+      //output[4] = (tran_low_t)fdct_round_shift(temp[4]);
+      //output[5] = (tran_low_t)fdct_round_shift(temp[5]);
+      //output[6] = (tran_low_t)fdct_round_shift(temp[6]);
+      //output[7] = (tran_low_t)fdct_round_shift(temp[7]);
 
-      output[4] = (tran_low_t)fdct_round_shift(temp[4]);
-      output[5] = (tran_low_t)fdct_round_shift(temp[5]);
-      output[6] = (tran_low_t)fdct_round_shift(temp[6]);
-      output[7] = (tran_low_t)fdct_round_shift(temp[7]);
+      //output[8] = (tran_low_t)fdct_round_shift(temp[8]);
+      //output[9] = (tran_low_t)fdct_round_shift(temp[9]);
+      //output[10] = (tran_low_t)fdct_round_shift(temp[10]);
+      //output[11] = (tran_low_t)fdct_round_shift(temp[11]);
 
-      output[8] = (tran_low_t)fdct_round_shift(temp[8]);
-      output[9] = (tran_low_t)fdct_round_shift(temp[9]);
-      output[10] = (tran_low_t)fdct_round_shift(temp[10]);
-      output[11] = (tran_low_t)fdct_round_shift(temp[11]);
+      //output[12] = (tran_low_t)fdct_round_shift(temp[12]);
+      //output[13] = (tran_low_t)fdct_round_shift(temp[13]);
+      //output[14] = (tran_low_t)fdct_round_shift(temp[14]);
+      //output[15] = (tran_low_t)fdct_round_shift(temp[15]);
 
-      output[12] = (tran_low_t)fdct_round_shift(temp[12]);
-      output[13] = (tran_low_t)fdct_round_shift(temp[13]);
-      output[14] = (tran_low_t)fdct_round_shift(temp[14]);
-      output[15] = (tran_low_t)fdct_round_shift(temp[15]);
+      temp0 = fdct_vector_round_shift(temp0);
+      temp1 = fdct_vector_round_shift(temp1);
+
+      vec_vsx_st(temp0, 0, ouput);
+      vec_vsx_st(temp1, 0, ouput + (2 * stride));
 
       // Do next column (which is a transposed row in second/horizontal pass)
     }
