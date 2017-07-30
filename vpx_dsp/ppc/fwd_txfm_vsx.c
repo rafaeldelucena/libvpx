@@ -122,7 +122,6 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     }
   }
   {
-    tran_high_t step[16];       // canbe16
     tran_high_t temp[16];  // needs32
 
     //int16x8_t step1, step2, step3, step4;
@@ -130,89 +129,79 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     {
       // Transform.
       //step1 = vec_add(in_high1, in_high2);
-      step[0] = intermediate[0] + intermediate[12];
-      step[1] = intermediate[4] + intermediate[8];
-      step[4] = intermediate[1] + intermediate[13];
-      step[5] = intermediate[5] + intermediate[9];
-      step[8] = intermediate[2] + intermediate[14];
-      step[9] = intermediate[6] + intermediate[10];
-      step[12] = intermediate[3] + intermediate[15];
-      step[13] = intermediate[7] + intermediate[11];
+      tran_high_t step_0 = intermediate[0] + intermediate[12];
+      tran_high_t step_1 = intermediate[1] + intermediate[13];
+      tran_high_t step_2 = intermediate[2] + intermediate[14];
+      tran_high_t step_3 = intermediate[3] + intermediate[15];
+      tran_high_t step_4 = intermediate[4] + intermediate[8];
+      tran_high_t step_5 = intermediate[5] + intermediate[9];
+      tran_high_t step_6 = intermediate[6] + intermediate[10];
+      tran_high_t step_7 = intermediate[7] + intermediate[11];
 
       //step2 = vec_sub(in_high1, in_high2);
-      step[3] = intermediate[0] - intermediate[12];
-      step[2] = intermediate[4] - intermediate[8];
-      step[7] = intermediate[1] - intermediate[13];
-      step[6] = intermediate[5] - intermediate[9];
-      step[11] = intermediate[2] - intermediate[14];
-      step[10] = intermediate[6] - intermediate[10];
-      step[15] = intermediate[3] - intermediate[15];
-      step[14] = intermediate[7] - intermediate[11];
+      tran_high_t step_8 = intermediate[0] - intermediate[12];
+      tran_high_t step_9 = intermediate[1] - intermediate[13];
+      tran_high_t step_10 = intermediate[2] - intermediate[14];
+      tran_high_t step_11 = intermediate[3] - intermediate[15];
+      tran_high_t step_12 = intermediate[4] - intermediate[8];
+      tran_high_t step_13 = intermediate[5] - intermediate[9];
+      tran_high_t step_14 = intermediate[6] - intermediate[10];
+      tran_high_t step_15 = intermediate[7] - intermediate[11];
 
+      tran_high_t x_0_0 = step_0 * cospi_16_64;
+      tran_high_t x_1_0 = step_12 * cospi_24_64;
+      tran_high_t x_2_0 = step_0 * cospi_16_64;
+      tran_high_t x_3_0 = -step_12 * cospi_8_64;
+      tran_high_t x_4_0 = step_1 * cospi_16_64;
+      tran_high_t x_5_0 = step_13 * cospi_24_64;
+      tran_high_t x_6_0 = step_1 * cospi_16_64;
+      tran_high_t x_7_0 = -step_13 * cospi_8_64;
 
-      tran_high_t x_0_0 = step[0] * cospi_16_64;
-      tran_high_t x_0_1 = step[1] * cospi_16_64;
+      tran_high_t x_0_1 = step_4 * cospi_16_64;
+      tran_high_t x_1_1 = step_8 * cospi_8_64;
+      tran_high_t x_2_1 = step_4 * cospi_16_64;
+      tran_high_t x_3_1 = step_8 * cospi_24_64;
+      tran_high_t x_4_1 = step_5 * cospi_16_64;
+      tran_high_t x_5_1 = step_13 * cospi_8_64;
+      tran_high_t x_6_1 = step_5 * cospi_16_64;
+      tran_high_t x_7_1 = step_13 * cospi_24_64;
+
+      tran_high_t x_8_0 = step_2 * cospi_16_64;
+      tran_high_t x_9_0 = step_14 * cospi_24_64;
+      tran_high_t x_10_0 = step_2 * cospi_16_64;
+      tran_high_t x_11_0 = -step_14 * cospi_8_64;
+      tran_high_t x_12_0 = step_3 * cospi_16_64;
+      tran_high_t x_13_0 = step_15 * cospi_24_64;
+      tran_high_t x_14_0 = step_3 * cospi_16_64;
+      tran_high_t x_15_0 = -step_15 * cospi_8_64;
+
+      tran_high_t x_8_1 = step[9] * cospi_16_64;
+      tran_high_t x_9_1 = step[11] * cospi_8_64;
+      tran_high_t x_10_1 = step[9] * cospi_16_64;
+      tran_high_t x_11_1 = step[11] * cospi_24_64;
+      tran_high_t x_12_1 = step[13] * cospi_16_64;
+      tran_high_t x_13_1 = step[15] * cospi_8_64;
+      tran_high_t x_14_1 = step[13] * cospi_16_64;
+      tran_high_t x_15_1 = step[15] * cospi_24_64;
+
       temp[0] = x_0_0 + x_0_1;
-
-      tran_high_t x_1_0 = step[2] * cospi_24_64;
-      tran_high_t x_1_1 = step[3] * cospi_8_64;
       temp[1] = x_1_0 + x_1_1;
-
-      tran_high_t x_2_0 = step[0] * cospi_16_64;
-      tran_high_t x_2_1 = step[1] * cospi_16_64;
       temp[2] = x_2_0 - x_2_1;
-
-      tran_high_t x_3_0 = -step[2] * cospi_8_64;
-      tran_high_t x_3_1 = step[3] * cospi_24_64;
       temp[3] = x_3_0 + x_3_1;
-
-      tran_high_t x_4_0 = step[4] * cospi_16_64;
-      tran_high_t x_4_1 = step[5] * cospi_16_64;
       temp[4] = x_4_0 + x_4_1;
-
-      tran_high_t x_5_0 = step[6] * cospi_24_64;
-      tran_high_t x_5_1 = step[7] * cospi_8_64;
       temp[5] = x_5_0 + x_5_1;
-
-      tran_high_t x_6_0 = step[4] * cospi_16_64;
-      tran_high_t x_6_1 = step[5] * cospi_16_64;
       temp[6] = x_6_0 - x_6_1;
-
-      tran_high_t x_7_0 = -step[6] * cospi_8_64;
-      tran_high_t x_7_1 = step[7] * cospi_24_64;
       temp[7] = x_7_0 + x_7_1;
 
-      tran_high_t x_8_0 = step[8] * cospi_16_64;
-      tran_high_t x_8_1 = step[9] * cospi_16_64;
       temp[8] = x_8_0 + x_8_1;
-
-      tran_high_t x_9_0 = step[10] * cospi_24_64;
-      tran_high_t x_9_1 = step[11] * cospi_8_64;
       temp[9] = x_9_0 + x_9_1;
-
-      tran_high_t x_10_0 = step[8] * cospi_16_64;
-      tran_high_t x_10_1 = step[9] * cospi_16_64;
       temp[10] = x_10_0 - x_10_1;
-
-      tran_high_t x_11_0 = -step[10] * cospi_8_64;
-      tran_high_t x_11_1 = step[11] * cospi_24_64;
       temp[11] = x_11_0 + x_11_1;
-
-      tran_high_t x_12_0 = step[12] * cospi_16_64;
-      tran_high_t x_12_1 = step[13] * cospi_16_64;
       temp[12] = x_12_0 + x_12_1;
-
-      tran_high_t x_13_0 = step[14] * cospi_24_64;
-      tran_high_t x_13_1 = step[15] * cospi_8_64;
       temp[13] = x_13_0 + x_13_1;
-
-      tran_high_t x_14_0 = step[12] * cospi_16_64;
-      tran_high_t x_14_1 = step[13] * cospi_16_64;
       temp[14] = x_14_0 - x_14_1;
-
-      tran_high_t x_15_0 = -step[14] * cospi_8_64;
-      tran_high_t x_15_1 = step[15] * cospi_24_64;
       temp[15] = x_15_0 + x_15_1;
+
 
       output[0] = (tran_low_t)fdct_round_shift(temp[0]);
       output[1] = (tran_low_t)fdct_round_shift(temp[1]);
