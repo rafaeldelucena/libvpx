@@ -11,7 +11,7 @@
 #include <assert.h>
 #include "./vpx_dsp_rtcd.h"
 #include "vpx_dsp/fwd_txfm.h"
-#include "vpx_dsp/types_vsx.h"
+#include "vpx_dsp/ppc/types_vsx.h"
 
 void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // The 2D transform is done with two passes which are actually pretty
