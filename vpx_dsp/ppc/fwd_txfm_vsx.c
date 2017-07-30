@@ -9,9 +9,22 @@
  */
 
 #include <assert.h>
+#include <stdio.h>
 #include "./vpx_dsp_rtcd.h"
 #include "vpx_dsp/fwd_txfm.h"
 #include "vpx_dsp/ppc/types_vsx.h"
+
+#define MATRIX_H4_PRINT(a0)\
+    printf(\
+    "0[ %04hx %04hx %04hx %04hx ]\n"\
+    "1[ %04hx %04hx %04hx %04hx ]\n"\
+    "2[ %04hx %04hx %04hx %04hx ]\n"\
+    "3[ %04hx %04hx %04hx %04hx ]\n"\
+    "4[ %04hx %04hx %04hx %04hx ]\n",\
+     a0[0*4 +0], a0[0*4 +1], a0[0*4 +2], a0[0*4 +3],\
+     a0[1*4 +0], a0[1*4 +1], a0[1*4 +2], a0[1*4 +3],\
+     a0[2*4 +0], a0[2*4 +1], a0[2*4 +2], a0[2*4 +3],\
+     a0[3*4 +0], a0[3*4 +1], a0[3*4 +2], a0[3*4 +3])
 
 ///* Shift down with rounding */
 //#define ROUND_POWER_OF_TWO(value, n) (((value) + (1 << ((n)-1))) >> (n))
@@ -326,5 +339,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     output[13] = (output[13] + 1) >> 2;
     output[14] = (output[14] + 1) >> 2;
     output[15] = (output[15] + 1) >> 2;
+    printf("---------------------------------------- TRANSFORM OUTPUT\n");
+    MATRIX_H4_PRINT(output);
   }
 }
