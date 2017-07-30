@@ -288,8 +288,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       temp0 = fdct_vector_round_shift(temp0);
       temp1 = fdct_vector_round_shift(temp1);
 
-      vec_vsx_st(temp0, 0, ouput);
-      vec_vsx_st(temp1, 0, ouput + (2 * stride));
+      vec_vsx_st(temp0, 0, output);
+      vec_vsx_st(temp1, 0, output + (2 * stride));
 
       // Do next column (which is a transposed row in second/horizontal pass)
     }
