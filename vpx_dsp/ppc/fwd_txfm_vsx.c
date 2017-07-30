@@ -122,6 +122,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     }
   }
   {
+    tran_high_t step[16];  // canbe16
     tran_high_t temp[16];  // needs32
 
     //int16x8_t step1, step2, step3, step4;
@@ -175,14 +176,14 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       tran_high_t x_14_0 = step_3 * cospi_16_64;
       tran_high_t x_15_0 = -step_15 * cospi_8_64;
 
-      tran_high_t x_8_1 = step[9] * cospi_16_64;
-      tran_high_t x_9_1 = step[11] * cospi_8_64;
-      tran_high_t x_10_1 = step[9] * cospi_16_64;
-      tran_high_t x_11_1 = step[11] * cospi_24_64;
-      tran_high_t x_12_1 = step[13] * cospi_16_64;
-      tran_high_t x_13_1 = step[15] * cospi_8_64;
-      tran_high_t x_14_1 = step[13] * cospi_16_64;
-      tran_high_t x_15_1 = step[15] * cospi_24_64;
+      tran_high_t x_9_1 = step_10 * cospi_8_64;
+      tran_high_t x_8_1 = step_6 * cospi_16_64;
+      tran_high_t x_10_1 = step_6 * cospi_16_64;
+      tran_high_t x_11_1 = step_10 * cospi_24_64;
+      tran_high_t x_12_1 = step_7 * cospi_16_64;
+      tran_high_t x_13_1 = step_11 * cospi_8_64;
+      tran_high_t x_14_1 = step_7 * cospi_16_64;
+      tran_high_t x_15_1 = step_11 * cospi_24_64;
 
       temp[0] = x_0_0 + x_0_1;
       temp[1] = x_1_0 + x_1_1;
