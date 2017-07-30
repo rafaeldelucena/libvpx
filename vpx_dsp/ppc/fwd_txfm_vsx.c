@@ -11,7 +11,7 @@
 #include <assert.h>
 #include "./vpx_dsp_rtcd.h"
 #include "vpx_dsp/fwd_txfm.h"
-//#include "vpx_dsp/types_vsx.h"
+#include "vpx_dsp/types_vsx.h"
 
 void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // The 2D transform is done with two passes which are actually pretty
@@ -25,10 +25,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // Do the two transform/transpose passes
   {
     tran_high_t in_high[16];    // canbe16
-    tran_high_t step[16];       // canbe16
     tran_high_t temp[16];  // needs32
 
-    //int16x8_t step1, step2, step3, step4;
     //int16x8_t in_high1, in_high2;
     {
       // Load inputs.
@@ -124,85 +122,142 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   {
     tran_high_t step[16];  // canbe16
     tran_high_t temp[16];  // needs32
-
-    //int16x8_t step1, step2, step3, step4;
-    //int16x8_t in_high1, in_high2;
     {
       // Transform.
+
       //step1 = vec_add(in_high1, in_high2);
-      tran_high_t step_0 = intermediate[0] + intermediate[12];
-      tran_high_t step_1 = intermediate[1] + intermediate[13];
-      tran_high_t step_2 = intermediate[2] + intermediate[14];
-      tran_high_t step_3 = intermediate[3] + intermediate[15];
-      tran_high_t step_4 = intermediate[4] + intermediate[8];
-      tran_high_t step_5 = intermediate[5] + intermediate[9];
-      tran_high_t step_6 = intermediate[6] + intermediate[10];
-      tran_high_t step_7 = intermediate[7] + intermediate[11];
+      //tran_high_t step_0 = intermediate[0] + intermediate[12];
+      //tran_high_t step_1 = intermediate[1] + intermediate[13];
+      //tran_high_t step_2 = intermediate[2] + intermediate[14];
+      //tran_high_t step_3 = intermediate[3] + intermediate[15];
+      //tran_high_t step_4 = intermediate[4] + intermediate[8];
+      //tran_high_t step_5 = intermediate[5] + intermediate[9];
+      //tran_high_t step_6 = intermediate[6] + intermediate[10];
+      //tran_high_t step_7 = intermediate[7] + intermediate[11];
 
       //step2 = vec_sub(in_high1, in_high2);
-      tran_high_t step_8 = intermediate[0] - intermediate[12];
-      tran_high_t step_9 = intermediate[1] - intermediate[13];
-      tran_high_t step_10 = intermediate[2] - intermediate[14];
-      tran_high_t step_11 = intermediate[3] - intermediate[15];
-      tran_high_t step_12 = intermediate[4] - intermediate[8];
-      tran_high_t step_13 = intermediate[5] - intermediate[9];
-      tran_high_t step_14 = intermediate[6] - intermediate[10];
-      tran_high_t step_15 = intermediate[7] - intermediate[11];
+      //tran_high_t step_8 = intermediate[0] - intermediate[12];
+      //tran_high_t step_9 = intermediate[1] - intermediate[13];
+      //tran_high_t step_10 = intermediate[2] - intermediate[14];
+      //tran_high_t step_11 = intermediate[3] - intermediate[15];
+      //tran_high_t step_12 = intermediate[4] - intermediate[8];
+      //tran_high_t step_13 = intermediate[5] - intermediate[9];
+      //tran_high_t step_14 = intermediate[6] - intermediate[10];
+      //tran_high_t step_15 = intermediate[7] - intermediate[11];
 
-      tran_high_t x_0_0 = step_0 * cospi_16_64;
-      tran_high_t x_1_0 = step_12 * cospi_24_64;
-      tran_high_t x_2_0 = step_0 * cospi_16_64;
-      tran_high_t x_3_0 = -step_12 * cospi_8_64;
-      tran_high_t x_4_0 = step_1 * cospi_16_64;
-      tran_high_t x_5_0 = step_13 * cospi_24_64;
-      tran_high_t x_6_0 = step_1 * cospi_16_64;
-      tran_high_t x_7_0 = -step_13 * cospi_8_64;
+      int16x8_t in1 = vec_vsx_ld(0, intermediate);
+      int16x8_t in0 = vec_vsx_ld(0, intermediate + (2 * stride));
+      int16x8_t perm0 = {4, 5, 6, 7, 0, 1, 2, 3};
 
-      tran_high_t x_0_1 = step_4 * cospi_16_64;
-      tran_high_t x_1_1 = step_8 * cospi_8_64;
-      tran_high_t x_2_1 = step_4 * cospi_16_64;
-      tran_high_t x_3_1 = step_8 * cospi_24_64;
-      tran_high_t x_4_1 = step_5 * cospi_16_64;
-      tran_high_t x_5_1 = step_9 * cospi_8_64;
-      tran_high_t x_6_1 = step_5 * cospi_16_64;
-      tran_high_t x_7_1 = step_9 * cospi_24_64;
+      int16x8_t in2 = vec_perm(in0, in0, perm0);
 
-      tran_high_t x_8_0 = step_2 * cospi_16_64;
-      tran_high_t x_9_0 = step_14 * cospi_24_64;
-      tran_high_t x_10_0 = step_2 * cospi_16_64;
-      tran_high_t x_11_0 = -step_14 * cospi_8_64;
-      tran_high_t x_12_0 = step_3 * cospi_16_64;
-      tran_high_t x_13_0 = step_15 * cospi_24_64;
-      tran_high_t x_14_0 = step_3 * cospi_16_64;
-      tran_high_t x_15_0 = -step_15 * cospi_8_64;
+      int16x8_t step1 = vec_add(in1, in2);
+      int16x8_t step2 = vec_sub(in1, in2);
 
-      tran_high_t x_9_1 = step_10 * cospi_8_64;
-      tran_high_t x_8_1 = step_6 * cospi_16_64;
-      tran_high_t x_10_1 = step_6 * cospi_16_64;
-      tran_high_t x_11_1 = step_10 * cospi_24_64;
-      tran_high_t x_12_1 = step_7 * cospi_16_64;
-      tran_high_t x_13_1 = step_11 * cospi_8_64;
-      tran_high_t x_14_1 = step_7 * cospi_16_64;
-      tran_high_t x_15_1 = step_11 * cospi_24_64;
+      //tran_high_t x_0_0 = step_0 * cospi_16_64;
+      //tran_high_t x_1_0 = step_12 * cospi_24_64;
+      //tran_high_t x_2_0 = step_0 * cospi_16_64;
+      //tran_high_t x_3_0 = -step_12 * cospi_8_64;
+      //tran_high_t x_4_0 = step_1 * cospi_16_64;
+      //tran_high_t x_5_0 = step_13 * cospi_24_64;
+      //tran_high_t x_6_0 = step_1 * cospi_16_64;
+      //tran_high_t x_7_0 = -step_13 * cospi_8_64;
 
-      temp[0] = x_0_0 + x_0_1;
-      temp[1] = x_1_0 + x_1_1;
-      temp[2] = x_2_0 - x_2_1;
-      temp[3] = x_3_0 + x_3_1;
-      temp[4] = x_4_0 + x_4_1;
-      temp[5] = x_5_0 + x_5_1;
-      temp[6] = x_6_0 - x_6_1;
-      temp[7] = x_7_0 + x_7_1;
+      int16x8_t perm1 = {0, 12, 0, 12, 1, 13, 1, 13};
+      int16x8_t x_0_0 = vec_perm(step1, step2, perm1);
+      int16x8_t cospi_0_0 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
+      int32x4_t e_0_0 = vec_mule(x_0_0, cospi_0_0);
+      int32x4_t o_0_0 = vec_mulo(x_0_0, cospi_0_0);
+      int32x4_t h_0_0 = vec_mergeh(e_0_0, o_0_0);
+      int32x4_t l_0_0 = vec_mergeh(e_0_0, o_0_0);
 
-      temp[8] = x_8_0 + x_8_1;
-      temp[9] = x_9_0 + x_9_1;
-      temp[10] = x_10_0 - x_10_1;
-      temp[11] = x_11_0 + x_11_1;
-      temp[12] = x_12_0 + x_12_1;
-      temp[13] = x_13_0 + x_13_1;
-      temp[14] = x_14_0 - x_14_1;
-      temp[15] = x_15_0 + x_15_1;
+      //tran_high_t x_0_1 = step_4 * cospi_16_64;
+      //tran_high_t x_1_1 = step_8 * cospi_8_64;
+      //tran_high_t x_2_1 = step_4 * cospi_16_64;
+      //tran_high_t x_3_1 = step_8 * cospi_24_64;
+      //tran_high_t x_4_1 = step_5 * cospi_16_64;
+      //tran_high_t x_5_1 = step_9 * cospi_8_64;
+      //tran_high_t x_6_1 = step_5 * cospi_16_64;
+      //tran_high_t x_7_1 = step_9 * cospi_24_64;
 
+      int16x8_t perm2 = {4, 8, 4, 8, 5, 9, 5, 9};
+      int16x8_t x_0_1 = vec_perm(step1, step2, perm2);
+
+      int16x8_t cospi_0_1 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
+      int32x4_t e_0_1 = vec_mule(x_0_1, cospi_0_1);
+      int32x4_t o_0_1 = vec_mulo(x_0_1, cospi_0_1);
+      int32x4_t h_0_1 = vec_mergeh(e_0_1, o_0_1);
+      int32x4_t l_0_1 = vec_mergeh(e_0_1, o_0_1);
+
+      //tran_high_t x_8_0 = step_2 * cospi_16_64;
+      //tran_high_t x_9_0 = step_14 * cospi_24_64;
+      //tran_high_t x_10_0 = step_2 * cospi_16_64;
+      //tran_high_t x_11_0 = -step_14 * cospi_8_64;
+      //tran_high_t x_12_0 = step_3 * cospi_16_64;
+      //tran_high_t x_13_0 = step_15 * cospi_24_64;
+      //tran_high_t x_14_0 = step_3 * cospi_16_64;
+      //tran_high_t x_15_0 = -step_15 * cospi_8_64;
+
+      int16x8_t perm3 = {2, 14, 2, 14, 3, 15, 3, 15};
+      int16x8_t x_0_2 = vec_perm(step1, step2, perm3);
+      int16x8_t cospi_0_2 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
+      int32x4_t e_0_2 = vec_mule(x_0_2, cospi_0_2);
+      int32x4_t o_0_2 = vec_mulo(x_0_2, cospi_0_2);
+      int32x4_t h_0_2 = vec_mergeh(e_0_2, o_0_2);
+      int32x4_t l_0_2 = vec_mergeh(e_0_2, o_0_2);
+
+      //tran_high_t x_8_1 = step_6 * cospi_16_64;
+      //tran_high_t x_9_1 = step_10 * cospi_8_64;
+      //tran_high_t x_10_1 = step_6 * cospi_16_64;
+      //tran_high_t x_11_1 = step_10 * cospi_24_64;
+      //tran_high_t x_12_1 = step_7 * cospi_16_64;
+      //tran_high_t x_13_1 = step_11 * cospi_8_64;
+      //tran_high_t x_14_1 = step_7 * cospi_16_64;
+      //tran_high_t x_15_1 = step_11 * cospi_24_64;
+
+      int16x8_t perm4 = {10, 6, 6, 10, 7, 11, 7, 11};
+      int16x8_t x_0_3 = vec_perm(step1, step2, perm4);
+      int16x8_t cospi_0_3 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
+      int32x4_t e_0_3 = vec_mule(x_0_3, cospi_0_3);
+      int32x4_t o_0_3 = vec_mulo(x_0_3, cospi_0_3);
+      int32x4_t h_0_3 = vec_mergeh(e_0_3, o_0_3);
+      int32x4_t l_0_3 = vec_mergeh(e_0_3, o_0_3);
+
+#ifdef WORDS_BIGENDIAN
+      int16x8_t a_0 = vec_pack(h_0_0, l_0_0);
+      int16x8_t a_1 = vec_pack(h_0_1, l_0_1);
+      int16x8_t a_2 = vec_pack(h_0_2, l_0_2);
+      int16x8_t a_3 = vec_pack(h_0_3, l_0_3);
+#else
+      int16x8_t a_0 = vec_pack(l_0_0, h_0_0);
+      int16x8_t a_1 = vec_pack(l_0_1, h_0_1);
+      int16x8_t a_2 = vec_pack(l_0_2, h_0_2);
+      int16x8_t a_3 = vec_pack(l_0_3, h_0_3);
+#endif // WORDS_BIGENDIAN
+
+      //temp[0] = x_0_0 + x_0_1;
+      //temp[1] = x_1_0 + x_1_1;
+      //temp[2] = x_2_0 - x_2_1;
+      //temp[3] = x_3_0 + x_3_1;
+      //temp[4] = x_4_0 + x_4_1;
+      //temp[5] = x_5_0 + x_5_1;
+      //temp[6] = x_6_0 - x_6_1;
+      //temp[7] = x_7_0 + x_7_1;
+
+      //temp[8] = x_8_0 + x_8_1;
+      //temp[9] = x_9_0 + x_9_1;
+      //temp[10] = x_10_0 - x_10_1;
+      //temp[11] = x_11_0 + x_11_1;
+      //temp[12] = x_12_0 + x_12_1;
+      //temp[13] = x_13_0 + x_13_1;
+      //temp[14] = x_14_0 - x_14_1;
+      //temp[15] = x_15_0 + x_15_1;
+
+      int16x8_t temp0 = vec_add(a_0, a_1);
+      int16x8_t temp1 = vec_add(a_2, a_3);
+
+      vec_vsx_st(temp0, 0, temp);
+      vec_vsx_st(temp1, 0, temp + (2 * stride));
 
       output[0] = (tran_low_t)fdct_round_shift(temp[0]);
       output[1] = (tran_low_t)fdct_round_shift(temp[1]);
