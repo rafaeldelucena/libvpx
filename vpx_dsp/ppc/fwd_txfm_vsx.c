@@ -372,7 +372,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   MATRIX_SI4_PRINT(out1, out2);
 
   store_tran_low(out1, 0, output);
-  store_tran_low(out, 0, output + (2* stride));
+  store_tran_low(out2, 0, output + (2* stride));
 
   printf("---------------------------------------- TRANSFORM OUTPUT\n");
   MATRIX_H4_PRINT(output);
