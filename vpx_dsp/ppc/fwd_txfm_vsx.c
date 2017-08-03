@@ -205,6 +205,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 
   int16x8_t in1 = vec_vsx_ld(0, intermediate);
   int16x8_t in0 = vec_vsx_ld(0, intermediate + (2 * stride));
+  printf("---------------------------------------- AFTER LOAD\n");
+  MATRIX_SI4_PRINT(in1, in0);
   uint8x16_t perm0 = {0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7};
 
   int16x8_t in2 = vec_perm(in0, in0, perm0);
@@ -337,29 +339,41 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   temp0 = fdct_vector_round_shift(temp0);
   temp1 = fdct_vector_round_shift(temp1);
 
-  vec_vsx_st(temp0, 0, output);
-  vec_vsx_st(temp1, 0, output + (2 * stride));
+  //output[0] = (output[0] + 1) >> 2;
+  //output[1] = (output[1] + 1) >> 2;
+  //output[2] = (output[2] + 1) >> 2;
+  //output[3] = (output[3] + 1) >> 2;
 
-  // Do next column (which is a transposed row in second/horizontal pass)
-  output[0] = (output[0] + 1) >> 2;
-  output[1] = (output[1] + 1) >> 2;
-  output[2] = (output[2] + 1) >> 2;
-  output[3] = (output[3] + 1) >> 2;
+  //output[4] = (output[4] + 1) >> 2;
+  //output[5] = (output[5] + 1) >> 2;
+  //output[6] = (output[6] + 1) >> 2;
+  //output[7] = (output[7] + 1) >> 2;
 
-  output[4] = (output[4] + 1) >> 2;
-  output[5] = (output[5] + 1) >> 2;
-  output[6] = (output[6] + 1) >> 2;
-  output[7] = (output[7] + 1) >> 2;
+  //output[8] = (output[8] + 1) >> 2;
+  //output[9] = (output[9] + 1) >> 2;
+  //output[10] = (output[10] + 1) >> 2;
+  //output[11] = (output[11] + 1) >> 2;
 
-  output[8] = (output[8] + 1) >> 2;
-  output[9] = (output[9] + 1) >> 2;
-  output[10] = (output[10] + 1) >> 2;
-  output[11] = (output[11] + 1) >> 2;
+  //output[12] = (output[12] + 1) >> 2;
+  //output[13] = (output[13] + 1) >> 2;
+  //output[14] = (output[14] + 1) >> 2;
+  //output[15] = (output[15] + 1) >> 2;
 
-  output[12] = (output[12] + 1) >> 2;
-  output[13] = (output[13] + 1) >> 2;
-  output[14] = (output[14] + 1) >> 2;
-  output[15] = (output[15] + 1) >> 2;
+  int16x8_t one = vec_splat_s16(1);
+  int16x8_t two = vec_splat_s16(2);
+
+  int16x8_t temp2 = vec_add(temp0, one);
+  int16x8_t temp3 = vec_add(temp1, one);
+
+  int16x8_t out1 = vec_sra(temp2, two);
+  int16x8_t out2 = vec_sra(temp3, two);
+
+  printf("---------------------------------------- BEFORE STORE\n");
+  MATRIX_SI4_PRINT(out1, out2);
+
+  store_tran_low(out1, 0, output);
+  store_tran_low(out, 0, output + (2* stride));
+
   printf("---------------------------------------- TRANSFORM OUTPUT\n");
   MATRIX_H4_PRINT(output);
 }
