@@ -13,6 +13,7 @@
 #include "./vpx_dsp_rtcd.h"
 #include "vpx_dsp/fwd_txfm.h"
 #include "vpx_dsp/ppc/types_vsx.h"
+#include "vpx_dsp/ppc/bitdepth_conversion_vsx.h"
 
 #define MATRIX_H4_PRINT(a0)\
     printf(\
