@@ -333,9 +333,12 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   //output[13] = (tran_low_t)fdct_round_shift(temp[13]);
   //output[14] = (tran_low_t)fdct_round_shift(temp[14]);
   //output[15] = (tran_low_t)fdct_round_shift(temp[15]);
+  //
+  printf("---------------------------------------- BEFORE ROUDING\n");
+  MATRIX_SI4_PRINT(temp0, temp1);
 
-  temp0 = fdct_vector_round_shift(temp0);
-  temp1 = fdct_vector_round_shift(temp1);
+  int16x8_t temp2 = fdct_vector_round_shift(temp0);
+  int16x8_t temp3 = fdct_vector_round_shift(temp1);
 
   //output[0] = (output[0] + 1) >> 2;
   //output[1] = (output[1] + 1) >> 2;
@@ -360,11 +363,11 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   int16x8_t one = vec_splat_s16(1);
   uint16x8_t two = vec_splat_u16(2);
 
-  int16x8_t temp2 = vec_add(temp0, one);
-  int16x8_t temp3 = vec_add(temp1, one);
+  int16x8_t temp4 = vec_add(temp2, one);
+  int16x8_t temp5 = vec_add(temp3, one);
 
-  int16x8_t out1 = vec_sra(temp2, two);
-  int16x8_t out2 = vec_sra(temp3, two);
+  int16x8_t out1 = vec_sra(temp4, two);
+  int16x8_t out2 = vec_sra(temp5, two);
 
   printf("---------------------------------------- BEFORE STORE\n");
   MATRIX_SI4_PRINT(out1, out2);
