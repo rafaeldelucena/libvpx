@@ -360,7 +360,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   //output[14] = (output[14] + 1) >> 2;
   //output[15] = (output[15] + 1) >> 2;
 
-  uint16x8_t one = vec_splat_s16(1);
+  int16x8_t one = vec_splat_s16(1);
   uint16x8_t two = vec_splat_s16(2);
 
   int16x8_t temp2 = vec_add(temp0, one);
