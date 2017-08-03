@@ -206,7 +206,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 
       int16x8_t in1 = vec_vsx_ld(0, intermediate);
       int16x8_t in0 = vec_vsx_ld(0, intermediate + (2 * stride));
-      uint8x16_t perm0 = {4, 5, 6, 7, 0, 1, 2, 3};
+      uint8x16_t perm0 = {0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7};
 
       int16x8_t in2 = vec_perm(in0, in0, perm0);
 
@@ -222,7 +222,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //tran_high_t x_6_0 = step_1 * cospi_16_64;
       //tran_high_t x_7_0 = -step_13 * cospi_8_64;
 
-      uint8x16_t perm1 = {0, 12, 0, 12, 1, 13, 1, 13};
+      uint8x16_t perm1 = {0x0, 0x1, 0x18, 0x19, 0x0, 0x1, 0x18, 0x19, 0x2, 0x3, 0x1A, 0x1B, 0x2, 0x3, 0x1A, 0x1B};
       int16x8_t x_0_0 = vec_perm(step1, step2, perm1);
       int16x8_t cospi_0_0 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
       int32x4_t e_0_0 = vec_mule(x_0_0, cospi_0_0);
@@ -239,7 +239,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //tran_high_t x_6_1 = step_5 * cospi_16_64;
       //tran_high_t x_7_1 = step_9 * cospi_24_64;
 
-      uint8x16_t perm2 = {4, 8, 4, 8, 5, 9, 5, 9};
+      uint8x16_t perm2 = {0x8, 0x9, 0x10, 0x11, 0x8, 0x9, 0x10, 0x11, 0xA, 0xB, 0x12, 0x13, 0xA, 0xB, 0x12, 0x13};
       int16x8_t x_0_1 = vec_perm(step1, step2, perm2);
 
       int16x8_t cospi_0_1 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
@@ -257,7 +257,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //tran_high_t x_14_0 = step_3 * cospi_16_64;
       //tran_high_t x_15_0 = -step_15 * cospi_8_64;
 
-      uint8x16_t perm3 = {2, 14, 2, 14, 3, 15, 3, 15};
+      uint8x16_t perm3 = {0x4, 0x5, 0x1C, 0x1D, 0x4, 0x5, 0x1C, 0x1D, 0x6, 0x7, 0x1E, 0x1F, 0x6, 0x7, 0x1E, 0x1F};
       int16x8_t x_0_2 = vec_perm(step1, step2, perm3);
       int16x8_t cospi_0_2 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
       int32x4_t e_0_2 = vec_mule(x_0_2, cospi_0_2);
@@ -274,7 +274,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //tran_high_t x_14_1 = step_7 * cospi_16_64;
       //tran_high_t x_15_1 = step_11 * cospi_24_64;
 
-      uint8x16_t perm4 = {10, 6, 6, 10, 7, 11, 7, 11};
+      uint8x16_t perm4 = {0x14, 0x15, 0xC, 0xD, 0xC, 0xD, 0x14, 0x15, 0xE, 0xF, 0x16, 0x17, 0xE, 0xF, 0x16, 0x17};
       int16x8_t x_0_3 = vec_perm(step1, step2, perm4);
       int16x8_t cospi_0_3 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
       int32x4_t e_0_3 = vec_mule(x_0_3, cospi_0_3);
