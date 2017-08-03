@@ -282,15 +282,15 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   int32x4_t l_0_3 = vec_mergel(e_0_3, o_0_3);
 
 #ifdef WORDS_BIGENDIAN
-  int16x8_t a_0 = vec_pack(h_0_0, l_0_0);
-  int16x8_t a_1 = vec_pack(h_0_1, l_0_1);
-  int16x8_t a_2 = vec_pack(h_0_2, l_0_2);
-  int16x8_t a_3 = vec_pack(h_0_3, l_0_3);
-#else
   int16x8_t a_0 = vec_pack(l_0_0, h_0_0);
   int16x8_t a_1 = vec_pack(l_0_1, h_0_1);
   int16x8_t a_2 = vec_pack(l_0_2, h_0_2);
   int16x8_t a_3 = vec_pack(l_0_3, h_0_3);
+#else
+  int16x8_t a_0 = vec_pack(h_0_0, l_0_0);
+  int16x8_t a_1 = vec_pack(h_0_1, l_0_1);
+  int16x8_t a_2 = vec_pack(h_0_2, l_0_2);
+  int16x8_t a_3 = vec_pack(h_0_3, l_0_3);
 #endif // WORDS_BIGENDIAN
 
   //temp[0] = x_0_0 + x_0_1;
