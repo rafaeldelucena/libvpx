@@ -228,7 +228,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       int32x4_t e_0_0 = vec_mule(x_0_0, cospi_0_0);
       int32x4_t o_0_0 = vec_mulo(x_0_0, cospi_0_0);
       int32x4_t h_0_0 = vec_mergeh(e_0_0, o_0_0);
-      int32x4_t l_0_0 = vec_mergeh(e_0_0, o_0_0);
+      int32x4_t l_0_0 = vec_mergel(e_0_0, o_0_0);
 
       //tran_high_t x_0_1 = step_4 * cospi_16_64;
       //tran_high_t x_1_1 = step_8 * cospi_8_64;
@@ -246,7 +246,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       int32x4_t e_0_1 = vec_mule(x_0_1, cospi_0_1);
       int32x4_t o_0_1 = vec_mulo(x_0_1, cospi_0_1);
       int32x4_t h_0_1 = vec_mergeh(e_0_1, o_0_1);
-      int32x4_t l_0_1 = vec_mergeh(e_0_1, o_0_1);
+      int32x4_t l_0_1 = vec_mergel(e_0_1, o_0_1);
 
       //tran_high_t x_8_0 = step_2 * cospi_16_64;
       //tran_high_t x_9_0 = step_14 * cospi_24_64;
@@ -263,7 +263,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       int32x4_t e_0_2 = vec_mule(x_0_2, cospi_0_2);
       int32x4_t o_0_2 = vec_mulo(x_0_2, cospi_0_2);
       int32x4_t h_0_2 = vec_mergeh(e_0_2, o_0_2);
-      int32x4_t l_0_2 = vec_mergeh(e_0_2, o_0_2);
+      int32x4_t l_0_2 = vec_mergel(e_0_2, o_0_2);
 
       //tran_high_t x_8_1 = step_6 * cospi_16_64;
       //tran_high_t x_9_1 = step_10 * cospi_8_64;
@@ -280,7 +280,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       int32x4_t e_0_3 = vec_mule(x_0_3, cospi_0_3);
       int32x4_t o_0_3 = vec_mulo(x_0_3, cospi_0_3);
       int32x4_t h_0_3 = vec_mergeh(e_0_3, o_0_3);
-      int32x4_t l_0_3 = vec_mergeh(e_0_3, o_0_3);
+      int32x4_t l_0_3 = vec_mergel(e_0_3, o_0_3);
 
 #ifdef WORDS_BIGENDIAN
       int16x8_t a_0 = vec_pack(h_0_0, l_0_0);
