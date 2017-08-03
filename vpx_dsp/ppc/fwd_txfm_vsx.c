@@ -180,8 +180,6 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       MATRIX_H4_PRINT(intermediate);
     }
   }
-{
-  tran_high_t temp[16];  // needs32
   // Transform.
 
   //step1 = vec_add(in_high1, in_high2);
@@ -361,7 +359,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   //output[15] = (output[15] + 1) >> 2;
 
   int16x8_t one = vec_splat_s16(1);
-  uint16x8_t two = vec_splat_s16(2);
+  uint16x8_t two = vec_splat_u16(2);
 
   int16x8_t temp2 = vec_add(temp0, one);
   int16x8_t temp3 = vec_add(temp1, one);
