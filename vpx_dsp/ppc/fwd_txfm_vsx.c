@@ -65,7 +65,7 @@ static INLINE int16x8_t fdct_vector_round_shift(int16x8_t input) {
   uint16x8_t dct_const_1 = vec_splat_u16(DCT_CONST_BITS);
   int16x8_t tmp = vec_sl(one, dct_const_0);
   int16x8_t sum = vec_add(input, tmp);
-  return vec_sr(sum, dct_const_1);
+  return vec_sra(sum, dct_const_1);
 }
 
 void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
