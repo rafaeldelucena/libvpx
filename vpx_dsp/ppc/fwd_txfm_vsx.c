@@ -474,7 +474,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   int32x4_t tempB = vec_sra(temp7, two);
 
   printf("---------------------------------------- BEFORE PACKING\n");
-  MATRIX_SS4_PRINT(out1, out2, out3, out4);
+  MATRIX_SS4_PRINT(temp8, temp9, tempA, tempB);
 
 #ifdef WORDS_BIGENDIAN
   int16x8_t out1 = vec_pack(temp8, temp9);
