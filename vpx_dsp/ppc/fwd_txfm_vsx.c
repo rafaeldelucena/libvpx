@@ -346,6 +346,9 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   int16x8_t temp2 = fdct_vector_round_shift(temp0);
   int16x8_t temp3 = fdct_vector_round_shift(temp1);
 
+  printf("---------------------------------------- AFTER ROUDING\n");
+  MATRIX_SI4_PRINT(temp2, temp3);
+
   //output[0] = (output[0] + 1) >> 2;
   //output[1] = (output[1] + 1) >> 2;
   //output[2] = (output[2] + 1) >> 2;
