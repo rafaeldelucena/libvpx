@@ -230,6 +230,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   uint8x16_t perm1 = {0x0, 0x1, 0x18, 0x19, 0x0, 0x1, 0x18, 0x19, 0x2, 0x3, 0x1A, 0x1B, 0x2, 0x3, 0x1A, 0x1B};
   int16x8_t x_0_0 = vec_perm(step1, step2, perm1);
   int16x8_t cospi_0_0 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
+  printf("---------------------------------------- BEFORE MULTIPLYING 0\n");
+  MATRIX_SI4_PRINT(x_0_0, cospi_0_0);
   int32x4_t e_0_0 = vec_mule(x_0_0, cospi_0_0);
   int32x4_t o_0_0 = vec_mulo(x_0_0, cospi_0_0);
   int32x4_t h_0_0 = vec_mergeh(e_0_0, o_0_0);
@@ -248,6 +250,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   int16x8_t x_0_1 = vec_perm(step1, step2, perm2);
 
   int16x8_t cospi_0_1 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
+  printf("---------------------------------------- BEFORE MULTIPLYING 1\n");
+  MATRIX_SI4_PRINT(x_0_1, cospi_0_1);
   int32x4_t e_0_1 = vec_mule(x_0_1, cospi_0_1);
   int32x4_t o_0_1 = vec_mulo(x_0_1, cospi_0_1);
   int32x4_t h_0_1 = vec_mergeh(e_0_1, o_0_1);
@@ -265,6 +269,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   uint8x16_t perm3 = {0x4, 0x5, 0x1C, 0x1D, 0x4, 0x5, 0x1C, 0x1D, 0x6, 0x7, 0x1E, 0x1F, 0x6, 0x7, 0x1E, 0x1F};
   int16x8_t x_0_2 = vec_perm(step1, step2, perm3);
   int16x8_t cospi_0_2 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
+  printf("---------------------------------------- BEFORE MULTIPLYING 2\n");
+  MATRIX_SI4_PRINT(x_0_2, cospi_0_2);
   int32x4_t e_0_2 = vec_mule(x_0_2, cospi_0_2);
   int32x4_t o_0_2 = vec_mulo(x_0_2, cospi_0_2);
   int32x4_t h_0_2 = vec_mergeh(e_0_2, o_0_2);
@@ -282,6 +288,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   uint8x16_t perm4 = {0x14, 0x15, 0xC, 0xD, 0xC, 0xD, 0x14, 0x15, 0xE, 0xF, 0x16, 0x17, 0xE, 0xF, 0x16, 0x17};
   int16x8_t x_0_3 = vec_perm(step1, step2, perm4);
   int16x8_t cospi_0_3 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
+  printf("---------------------------------------- BEFORE MULTIPLYING 3\n");
+  MATRIX_SI4_PRINT(x_0_3, cospi_0_3);
   int32x4_t e_0_3 = vec_mule(x_0_3, cospi_0_3);
   int32x4_t o_0_3 = vec_mulo(x_0_3, cospi_0_3);
   int32x4_t h_0_3 = vec_mergeh(e_0_3, o_0_3);
