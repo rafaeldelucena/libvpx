@@ -209,8 +209,14 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 
   int16x8_t in2 = vec_perm(in0, in0, perm0);
 
+  printf("---------------------------------------- AFTER PERMUTATION\n");
+  MATRIX_SI4_PRINT(in1, in2);
+
   int16x8_t step1 = vec_add(in1, in2);
   int16x8_t step2 = vec_sub(in1, in2);
+
+  printf("---------------------------------------- AFTER SUM\n");
+  MATRIX_SI4_PRINT(step1, step2);
 
   //tran_high_t x_0_0 = step_0 * cospi_16_64;
   //tran_high_t x_1_0 = step_12 * cospi_24_64;
