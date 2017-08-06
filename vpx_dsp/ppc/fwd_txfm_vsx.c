@@ -477,11 +477,11 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   MATRIX_SS4_PRINT(temp8, temp9, tempA, tempB);
 
 #ifdef WORDS_BIGENDIAN
-  int16x8_t out1 = vec_pack(temp8, temp9);
-  int16x8_t out2 = vec_pack(tempA, tempB);
-#else
   int16x8_t out1 = vec_pack(temp9, temp8);
   int16x8_t out2 = vec_pack(tempB, tempA);
+#else
+  int16x8_t out1 = vec_pack(temp8, temp9);
+  int16x8_t out2 = vec_pack(tempA, tempB);
 #endif // WORDS_BIGENDIAN
 
   printf("---------------------------------------- BEFORE STORE\n");
