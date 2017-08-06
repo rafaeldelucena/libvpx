@@ -59,12 +59,21 @@
 //  return rv;
 //}
 
-static INLINE int16x8_t fdct_vector_round_shift(int16x8_t input) {
-  int16x8_t one = vec_splat_s16(1);
-  uint16x8_t dct_const_0 = vec_splat_u16(DCT_CONST_BITS - 1);
-  uint16x8_t dct_const_1 = vec_splat_u16(DCT_CONST_BITS);
-  int16x8_t tmp = vec_sl(one, dct_const_0);
-  int16x8_t sum = vec_add(input, tmp);
+//static INLINE int16x8_t fdct_vector_round_shift(int16x8_t input) {
+//  int16x8_t one = vec_splat_s16(1);
+//  uint16x8_t dct_const_0 = vec_splat_u16(DCT_CONST_BITS - 1);
+//  uint16x8_t dct_const_1 = vec_splat_u16(DCT_CONST_BITS);
+//  int16x8_t tmp = vec_sl(one, dct_const_0);
+//  int16x8_t sum = vec_add(input, tmp);
+//  return vec_sra(sum, dct_const_1);
+//}
+
+static INLINE int32x4_t fdct_vector_round_shift(int32x4_t input) {
+  int32x4_t one = vec_splat_s32(1);
+  uint32x4_t dct_const_0 = vec_splat_u32(DCT_CONST_BITS - 1);
+  uint32x4_t dct_const_1 = vec_splat_u32(DCT_CONST_BITS);
+  int32x4_t tmp = vec_sl(one, dct_const_0);
+  int32x4_t sum = vec_add(input, tmp);
   return vec_sra(sum, dct_const_1);
 }
 
@@ -218,94 +227,77 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   printf("---------------------------------------- AFTER SUM\n");
   MATRIX_SI4_PRINT(step1, step2);
 
+  // e_0_0
   //tran_high_t x_0_0 = step_0 * cospi_16_64;
-  //tran_high_t x_1_0 = step_12 * cospi_24_64;
   //tran_high_t x_2_0 = step_0 * cospi_16_64;
-  //tran_high_t x_3_0 = -step_12 * cospi_8_64;
   //tran_high_t x_4_0 = step_1 * cospi_16_64;
-  //tran_high_t x_5_0 = step_13 * cospi_24_64;
   //tran_high_t x_6_0 = step_1 * cospi_16_64;
+
+  // o_0_0
+  //tran_high_t x_1_0 = step_12 * cospi_24_64;
+  //tran_high_t x_3_0 = -step_12 * cospi_8_64;
+  //tran_high_t x_5_0 = step_13 * cospi_24_64;
   //tran_high_t x_7_0 = -step_13 * cospi_8_64;
 
-  uint8x16_t perm1 = {0x0, 0x1, 0x18, 0x19, 0x0, 0x1, 0x18, 0x19, 0x2, 0x3, 0x1A, 0x1B, 0x2, 0x3, 0x1A, 0x1B};
-  int16x8_t x_0_0 = vec_perm(step1, step2, perm1);
-  int16x8_t cospi_0_0 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
-  printf("---------------------------------------- BEFORE MULTIPLYING 0\n");
-  MATRIX_SI4_PRINT(x_0_0, cospi_0_0);
-  int32x4_t e_0_0 = vec_mule(x_0_0, cospi_0_0);
-  int32x4_t o_0_0 = vec_mulo(x_0_0, cospi_0_0);
-  int32x4_t h_0_0 = vec_mergeh(e_0_0, o_0_0);
-  int32x4_t l_0_0 = vec_mergel(e_0_0, o_0_0);
-
+  // e_0_1
   //tran_high_t x_0_1 = step_4 * cospi_16_64;
-  //tran_high_t x_1_1 = step_8 * cospi_8_64;
   //tran_high_t x_2_1 = step_4 * cospi_16_64;
-  //tran_high_t x_3_1 = step_8 * cospi_24_64;
   //tran_high_t x_4_1 = step_5 * cospi_16_64;
-  //tran_high_t x_5_1 = step_9 * cospi_8_64;
   //tran_high_t x_6_1 = step_5 * cospi_16_64;
+
+  // o_0_1
+  //tran_high_t x_1_1 = step_8 * cospi_8_64;
+  //tran_high_t x_3_1 = step_8 * cospi_24_64;
+  //tran_high_t x_5_1 = step_9 * cospi_8_64;
   //tran_high_t x_7_1 = step_9 * cospi_24_64;
 
-  uint8x16_t perm2 = {0x8, 0x9, 0x10, 0x11, 0x8, 0x9, 0x10, 0x11, 0xA, 0xB, 0x12, 0x13, 0xA, 0xB, 0x12, 0x13};
-  int16x8_t x_0_1 = vec_perm(step1, step2, perm2);
-
-  int16x8_t cospi_0_1 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
-  printf("---------------------------------------- BEFORE MULTIPLYING 1\n");
-  MATRIX_SI4_PRINT(x_0_1, cospi_0_1);
-  int32x4_t e_0_1 = vec_mule(x_0_1, cospi_0_1);
-  int32x4_t o_0_1 = vec_mulo(x_0_1, cospi_0_1);
-  int32x4_t h_0_1 = vec_mergeh(e_0_1, o_0_1);
-  int32x4_t l_0_1 = vec_mergel(e_0_1, o_0_1);
-
+  // e_0_2
   //tran_high_t x_8_0 = step_2 * cospi_16_64;
-  //tran_high_t x_9_0 = step_14 * cospi_24_64;
   //tran_high_t x_10_0 = step_2 * cospi_16_64;
-  //tran_high_t x_11_0 = -step_14 * cospi_8_64;
   //tran_high_t x_12_0 = step_3 * cospi_16_64;
-  //tran_high_t x_13_0 = step_15 * cospi_24_64;
   //tran_high_t x_14_0 = step_3 * cospi_16_64;
+
+  // o_0_2
+  //tran_high_t x_9_0 = step_14 * cospi_24_64;
+  //tran_high_t x_11_0 = -step_14 * cospi_8_64;
+  //tran_high_t x_13_0 = step_15 * cospi_24_64;
   //tran_high_t x_15_0 = -step_15 * cospi_8_64;
 
-  uint8x16_t perm3 = {0x4, 0x5, 0x1C, 0x1D, 0x4, 0x5, 0x1C, 0x1D, 0x6, 0x7, 0x1E, 0x1F, 0x6, 0x7, 0x1E, 0x1F};
-  int16x8_t x_0_2 = vec_perm(step1, step2, perm3);
-  int16x8_t cospi_0_2 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
-  printf("---------------------------------------- BEFORE MULTIPLYING 2\n");
-  MATRIX_SI4_PRINT(x_0_2, cospi_0_2);
-  int32x4_t e_0_2 = vec_mule(x_0_2, cospi_0_2);
-  int32x4_t o_0_2 = vec_mulo(x_0_2, cospi_0_2);
-  int32x4_t h_0_2 = vec_mergeh(e_0_2, o_0_2);
-  int32x4_t l_0_2 = vec_mergel(e_0_2, o_0_2);
-
+  // e_0_3
   //tran_high_t x_8_1 = step_6 * cospi_16_64;
-  //tran_high_t x_9_1 = step_10 * cospi_8_64;
   //tran_high_t x_10_1 = step_6 * cospi_16_64;
-  //tran_high_t x_11_1 = step_10 * cospi_24_64;
   //tran_high_t x_12_1 = step_7 * cospi_16_64;
-  //tran_high_t x_13_1 = step_11 * cospi_8_64;
   //tran_high_t x_14_1 = step_7 * cospi_16_64;
+
+  // o_0_3
+  //tran_high_t x_9_1 = step_10 * cospi_8_64;
+  //tran_high_t x_11_1 = step_10 * cospi_24_64;
+  //tran_high_t x_13_1 = step_11 * cospi_8_64;
   //tran_high_t x_15_1 = step_11 * cospi_24_64;
 
-  uint8x16_t perm4 = {0x14, 0x15, 0xC, 0xD, 0xC, 0xD, 0x14, 0x15, 0xE, 0xF, 0x16, 0x17, 0xE, 0xF, 0x16, 0x17};
-  int16x8_t x_0_3 = vec_perm(step1, step2, perm4);
-  int16x8_t cospi_0_3 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
-  printf("---------------------------------------- BEFORE MULTIPLYING 3\n");
-  MATRIX_SI4_PRINT(x_0_3, cospi_0_3);
-  int32x4_t e_0_3 = vec_mule(x_0_3, cospi_0_3);
-  int32x4_t o_0_3 = vec_mulo(x_0_3, cospi_0_3);
-  int32x4_t h_0_3 = vec_mergeh(e_0_3, o_0_3);
-  int32x4_t l_0_3 = vec_mergel(e_0_3, o_0_3);
+  // e_0_0 + e_0_1
+  //temp[0] = x_0_0 + x_0_1;
+  //temp[2] = x_2_0 - x_2_1;
+  //temp[4] = x_4_0 + x_4_1;
+  //temp[6] = x_6_0 - x_6_1;
 
-#ifdef WORDS_BIGENDIAN
-  int16x8_t a_0 = vec_pack(l_0_0, h_0_0);
-  int16x8_t a_1 = vec_pack(l_0_1, h_0_1);
-  int16x8_t a_2 = vec_pack(l_0_2, h_0_2);
-  int16x8_t a_3 = vec_pack(l_0_3, h_0_3);
-#else
-  int16x8_t a_0 = vec_pack(h_0_0, l_0_0);
-  int16x8_t a_1 = vec_pack(h_0_1, l_0_1);
-  int16x8_t a_2 = vec_pack(h_0_2, l_0_2);
-  int16x8_t a_3 = vec_pack(h_0_3, l_0_3);
-#endif // WORDS_BIGENDIAN
+  // o_0_0 + o_0_1
+  //temp[1] = x_1_0 + x_1_1;
+  //temp[3] = x_3_0 + x_3_1;
+  //temp[5] = x_5_0 + x_5_1;
+  //temp[7] = x_7_0 + x_7_1;
+
+  // e_0_2 + e_0_03
+  //temp[8] = x_8_0 + x_8_1;
+  //temp[10] = x_10_0 - x_10_1;
+  //temp[12] = x_12_0 + x_12_1;
+  //temp[14] = x_14_0 - x_14_1;
+
+  // o_0_2 + o_0_03
+  //temp[9] = x_9_0 + x_9_1;
+  //temp[11] = x_11_0 + x_11_1;
+  //temp[13] = x_13_0 + x_13_1;
+  //temp[15] = x_15_0 + x_15_1;
 
   //temp[0] = x_0_0 + x_0_1;
   //temp[1] = x_1_0 + x_1_1;
@@ -325,8 +317,97 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   //temp[14] = x_14_0 - x_14_1;
   //temp[15] = x_15_0 + x_15_1;
 
-  int16x8_t temp0 = vec_add(a_0, a_1);
-  int16x8_t temp1 = vec_add(a_2, a_3);
+  uint8x16_t perm1 = {0x0, 0x1, 0x18, 0x19, 0x0, 0x1, 0x18, 0x19, 0x2, 0x3, 0x1A, 0x1B, 0x2, 0x3, 0x1A, 0x1B};
+  int16x8_t x_0_0 = vec_perm(step1, step2, perm1);
+  int16x8_t cospi_0_0 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
+  printf("---------------------------------------- BEFORE MULTIPLYING 0\n");
+  MATRIX_SI4_PRINT(x_0_0, cospi_0_0);
+  int32x4_t e_0_0 = vec_mule(x_0_0, cospi_0_0);
+  int32x4_t o_0_0 = vec_mulo(x_0_0, cospi_0_0);
+  //int32x4_t h_0_0 = vec_mergeh(e_0_0, o_0_0);
+  //int32x4_t l_0_0 = vec_mergel(e_0_0, o_0_0);
+
+  uint8x16_t perm2 = {0x8, 0x9, 0x10, 0x11, 0x8, 0x9, 0x10, 0x11, 0xA, 0xB, 0x12, 0x13, 0xA, 0xB, 0x12, 0x13};
+  int16x8_t x_0_1 = vec_perm(step1, step2, perm2);
+  int16x8_t cospi_0_1 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
+  printf("---------------------------------------- BEFORE MULTIPLYING 1\n");
+  MATRIX_SI4_PRINT(x_0_1, cospi_0_1);
+  int32x4_t e_0_1 = vec_mule(x_0_1, cospi_0_1);
+  int32x4_t o_0_1 = vec_mulo(x_0_1, cospi_0_1);
+  //int32x4_t h_0_1 = vec_mergeh(e_0_1, o_0_1);
+  //int32x4_t l_0_1 = vec_mergel(e_0_1, o_0_1);
+
+  uint8x16_t perm3 = {0x4, 0x5, 0x1C, 0x1D, 0x4, 0x5, 0x1C, 0x1D, 0x6, 0x7, 0x1E, 0x1F, 0x6, 0x7, 0x1E, 0x1F};
+  int16x8_t x_0_2 = vec_perm(step1, step2, perm3);
+  int16x8_t cospi_0_2 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
+  printf("---------------------------------------- BEFORE MULTIPLYING 2\n");
+  MATRIX_SI4_PRINT(x_0_2, cospi_0_2);
+  int32x4_t e_0_2 = vec_mule(x_0_2, cospi_0_2);
+  int32x4_t o_0_2 = vec_mulo(x_0_2, cospi_0_2);
+  //int32x4_t h_0_2 = vec_mergeh(e_0_2, o_0_2);
+  //int32x4_t l_0_2 = vec_mergel(e_0_2, o_0_2);
+
+  uint8x16_t perm4 = {0x14, 0x15, 0xC, 0xD, 0xC, 0xD, 0x14, 0x15, 0xE, 0xF, 0x16, 0x17, 0xE, 0xF, 0x16, 0x17};
+  int16x8_t x_0_3 = vec_perm(step1, step2, perm4);
+  int16x8_t cospi_0_3 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
+  printf("---------------------------------------- BEFORE MULTIPLYING 3\n");
+  MATRIX_SI4_PRINT(x_0_3, cospi_0_3);
+  int32x4_t e_0_3 = vec_mule(x_0_3, cospi_0_3);
+  int32x4_t o_0_3 = vec_mulo(x_0_3, cospi_0_3);
+  //int32x4_t h_0_3 = vec_mergeh(e_0_3, o_0_3);
+  //int32x4_t l_0_3 = vec_mergel(e_0_3, o_0_3);
+
+//#ifdef WORDS_BIGENDIAN
+//  int16x8_t a_0 = vec_pack(l_0_0, h_0_0);
+//  int16x8_t a_1 = vec_pack(l_0_1, h_0_1);
+//  int16x8_t a_2 = vec_pack(l_0_2, h_0_2);
+//  int16x8_t a_3 = vec_pack(l_0_3, h_0_3);
+//#else
+//  int16x8_t a_0 = vec_pack(h_0_0, l_0_0);
+//  int16x8_t a_1 = vec_pack(h_0_1, l_0_1);
+//  int16x8_t a_2 = vec_pack(h_0_2, l_0_2);
+//  int16x8_t a_3 = vec_pack(h_0_3, l_0_3);
+//#endif // WORDS_BIGENDIAN
+
+//  int16x8_t temp0 = vec_add(a_0, a_1);
+//  int16x8_t temp1 = vec_add(a_2, a_3);
+
+  int32x4_t a_0 = vec_add(e_0_0, e_0_1);
+  int32x4_t a_1 = vec_add(o_0_0, o_0_1);
+  int32x4_t a_2 = vec_add(e_0_2, e_0_3);
+  int32x4_t a_3 = vec_add(o_0_2, o_0_3);
+
+  uint8x16_t p0 = {0x0, 0x1, 0x2, 0x3, 0x10, 0x11, 0x12, 0x13, 0x4, 0x5, 0x6, 0x7, 0x14, 0x15, 0x16, 0x17}
+  uint8x16_t p1 = {0x8, 0x9, 0xA, 0xB, 0x18, 0x19, 0x1A, 0x1B, 0xC, 0xD, 0xE, 0xF, 0x1C, 0x1D, 0x1E, 0x1F}
+
+  int32x4_t tmp0 = vec_perm(a_0, a_1, p0);
+  int32x4_t tmp1 = vec_perm(a_0, a_1, p1);
+  int32x4_t tmp2 = vec_perm(a_2, a_3, p0);
+  int32x4_t tmp3 = vec_perm(a_2, a_3, p1);
+
+  // a_0
+  //temp[0]
+  //temp[2]
+  //temp[4]
+  //temp[6]
+
+  // a_1 
+  //temp[1]
+  //temp[3]
+  //temp[5]
+  //temp[7]
+
+  // a_2 
+  //temp[8] 
+  //temp[10]
+  //temp[12]
+  //temp[14]
+
+  // a_3 
+  //temp[9]
+  //temp[11]
+  //temp[13]
+  //temp[15]
 
   //output[0] = (tran_low_t)fdct_round_shift(temp[0]);
   //output[1] = (tran_low_t)fdct_round_shift(temp[1]);
@@ -349,13 +430,15 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   //output[15] = (tran_low_t)fdct_round_shift(temp[15]);
   //
   printf("---------------------------------------- BEFORE ROUDING\n");
-  MATRIX_SI4_PRINT(temp0, temp1);
+  MATRIX_SS4_PRINT(tmp0, tmp1, tmp2, tmp3);
 
-  int16x8_t temp2 = fdct_vector_round_shift(temp0);
-  int16x8_t temp3 = fdct_vector_round_shift(temp1);
+  int32x4_t temp0 = fdct_vector_round_shift(tmp0);
+  int32x4_t temp1 = fdct_vector_round_shift(tmp1);
+  int32x4_t temp2 = fdct_vector_round_shift(tmp2);
+  int32x4_t temp3 = fdct_vector_round_shift(tmp3);
 
   printf("---------------------------------------- AFTER ROUDING\n");
-  MATRIX_SI4_PRINT(temp2, temp3);
+  MATRIX_SS4_PRINT(temp0, temp1, temp2, temp3);
 
   //output[0] = (output[0] + 1) >> 2;
   //output[1] = (output[1] + 1) >> 2;
@@ -377,14 +460,26 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   //output[14] = (output[14] + 1) >> 2;
   //output[15] = (output[15] + 1) >> 2;
 
-  int16x8_t one = vec_splat_s16(1);
-  uint16x8_t two = vec_splat_u16(2);
+  int32x4_t one = vec_splat_s32(1);
+  uint32x4_t two = vec_splat_u32(2);
 
-  int16x8_t temp4 = vec_add(temp2, one);
-  int16x8_t temp5 = vec_add(temp3, one);
+  int32x4_t temp4 = vec_add(temp0, one);
+  int32x4_t temp5 = vec_add(temp1, one);
+  int32x4_t temp6 = vec_add(temp2, one);
+  int32x4_t temp7 = vec_add(temp3, one);
 
-  int16x8_t out1 = vec_sra(temp4, two);
-  int16x8_t out2 = vec_sra(temp5, two);
+  int32x4_t temp8 = vec_sra(temp4, two);
+  int32x4_t temp9 = vec_sra(temp5, two);
+  int32x4_t tempA = vec_sra(temp6, two);
+  int32x4_t tempB = vec_sra(temp7, two);
+
+#ifdef WORDS_BIGENDIAN
+  int16x8_t out1 = vec_pack(temp8, temp9);
+  int16x8_t out2 = vec_pack(tempA, tempB);
+#else
+  int16x8_t out1 = vec_pack(temp9, tempB);
+  int16x8_t out2 = vec_pack(tempB, tempA);
+#endif // WORDS_BIGENDIAN
 
   printf("---------------------------------------- BEFORE STORE\n");
   MATRIX_SI4_PRINT(out1, out2);
