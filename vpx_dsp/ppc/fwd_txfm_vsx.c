@@ -48,6 +48,17 @@
      a1[0], a1[1], a1[2], a1[3],\
      a1[4], a1[5], a1[6], a1[7])
 
+#define MATRIX_I4_PRINT(a0,a1)\
+    printf(\
+    "0[ %d %d %d %d ]\n"\
+    "1[ %d %d %d %d ]\n"\
+    "2[ %d %d %d %d ]\n"\
+    "3[ %d %d %d %d ]\n",\
+     a0[0], a0[1], a0[2], a0[3],\
+     a0[4], a0[5], a0[6], a0[7],\
+     a1[0], a1[1], a1[2], a1[3],\
+     a1[4], a1[5], a1[6], a1[7])
+
 ///* Shift down with rounding */
 //#define ROUND_POWER_OF_TWO(value, n) (((value) + (1 << ((n)-1))) >> (n))
 //
@@ -492,4 +503,5 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 
   printf("---------------------------------------- TRANSFORM OUTPUT\n");
   MATRIX_H4_PRINT(output);
+  MATRIX_I4_PRINT(output);
 }
