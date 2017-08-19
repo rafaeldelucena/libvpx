@@ -335,8 +335,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   MATRIX_SI4_PRINT(x_0_0, cospi_0_0);
   int32x4_t e_0_0 = vec_mule(x_0_0, cospi_0_0);
   int32x4_t o_0_0 = vec_mulo(x_0_0, cospi_0_0);
-  //int32x4_t h_0_0 = vec_mergeh(e_0_0, o_0_0);
-  //int32x4_t l_0_0 = vec_mergel(e_0_0, o_0_0);
+  int32x4_t h_0_0 = vec_mergeh(e_0_0, o_0_0);
+  int32x4_t l_0_0 = vec_mergel(e_0_0, o_0_0);
 
   uint8x16_t perm2 = {0x8, 0x9, 0x10, 0x11, 0x8, 0x9, 0x10, 0x11, 0xA, 0xB, 0x12, 0x13, 0xA, 0xB, 0x12, 0x13};
   int16x8_t x_0_1 = vec_perm(step1, step2, perm2);
@@ -345,8 +345,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   MATRIX_SI4_PRINT(x_0_1, cospi_0_1);
   int32x4_t e_0_1 = vec_mule(x_0_1, cospi_0_1);
   int32x4_t o_0_1 = vec_mulo(x_0_1, cospi_0_1);
-  //int32x4_t h_0_1 = vec_mergeh(e_0_1, o_0_1);
-  //int32x4_t l_0_1 = vec_mergel(e_0_1, o_0_1);
+  int32x4_t h_0_1 = vec_mergeh(e_0_1, o_0_1);
+  int32x4_t l_0_1 = vec_mergel(e_0_1, o_0_1);
 
   uint8x16_t perm3 = {0x4, 0x5, 0x1C, 0x1D, 0x4, 0x5, 0x1C, 0x1D, 0x6, 0x7, 0x1E, 0x1F, 0x6, 0x7, 0x1E, 0x1F};
   int16x8_t x_0_2 = vec_perm(step1, step2, perm3);
@@ -355,8 +355,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   MATRIX_SI4_PRINT(x_0_2, cospi_0_2);
   int32x4_t e_0_2 = vec_mule(x_0_2, cospi_0_2);
   int32x4_t o_0_2 = vec_mulo(x_0_2, cospi_0_2);
-  //int32x4_t h_0_2 = vec_mergeh(e_0_2, o_0_2);
-  //int32x4_t l_0_2 = vec_mergel(e_0_2, o_0_2);
+  int32x4_t h_0_2 = vec_mergeh(e_0_2, o_0_2);
+  int32x4_t l_0_2 = vec_mergel(e_0_2, o_0_2);
 
   uint8x16_t perm4 = {0x14, 0x15, 0xC, 0xD, 0xC, 0xD, 0x14, 0x15, 0xE, 0xF, 0x16, 0x17, 0xE, 0xF, 0x16, 0x17};
   int16x8_t x_0_3 = vec_perm(step1, step2, perm4);
@@ -365,8 +365,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   MATRIX_SI4_PRINT(x_0_3, cospi_0_3);
   int32x4_t e_0_3 = vec_mule(x_0_3, cospi_0_3);
   int32x4_t o_0_3 = vec_mulo(x_0_3, cospi_0_3);
-  //int32x4_t h_0_3 = vec_mergeh(e_0_3, o_0_3);
-  //int32x4_t l_0_3 = vec_mergel(e_0_3, o_0_3);
+  int32x4_t h_0_3 = vec_mergeh(e_0_3, o_0_3);
+  int32x4_t l_0_3 = vec_mergel(e_0_3, o_0_3);
 
 //#ifdef WORDS_BIGENDIAN
 //  int16x8_t a_0 = vec_pack(l_0_0, h_0_0);
@@ -383,18 +383,18 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 //  int16x8_t temp0 = vec_add(a_0, a_1);
 //  int16x8_t temp1 = vec_add(a_2, a_3);
 
-  int32x4_t a_0 = vec_add(e_0_0, e_0_1);
-  int32x4_t a_1 = vec_add(o_0_0, o_0_1);
-  int32x4_t a_2 = vec_add(e_0_2, e_0_3);
-  int32x4_t a_3 = vec_add(o_0_2, o_0_3);
+  int32x4_t tmp1 = vec_add(h_0_0, h_0_1);
+  int32x4_t tmp0 = vec_add(l_0_0, l_0_1);
+  int32x4_t tmp3 = vec_add(h_0_2, h_0_3);
+  int32x4_t tmp2 = vec_add(l_0_2, l_0_3);
 
-  uint8x16_t p0 = {0x0, 0x1, 0x2, 0x3, 0x10, 0x11, 0x12, 0x13, 0x4, 0x5, 0x6, 0x7, 0x14, 0x15, 0x16, 0x17};
-  uint8x16_t p1 = {0x8, 0x9, 0xA, 0xB, 0x18, 0x19, 0x1A, 0x1B, 0xC, 0xD, 0xE, 0xF, 0x1C, 0x1D, 0x1E, 0x1F};
-
-  int32x4_t tmp0 = vec_perm(a_0, a_1, p0);
-  int32x4_t tmp1 = vec_perm(a_0, a_1, p1);
-  int32x4_t tmp2 = vec_perm(a_2, a_3, p0);
-  int32x4_t tmp3 = vec_perm(a_2, a_3, p1);
+//  uint8x16_t p0 = {0x0, 0x1, 0x2, 0x3, 0x10, 0x11, 0x12, 0x13, 0x4, 0x5, 0x6, 0x7, 0x14, 0x15, 0x16, 0x17};
+//  uint8x16_t p1 = {0x8, 0x9, 0xA, 0xB, 0x18, 0x19, 0x1A, 0x1B, 0xC, 0xD, 0xE, 0xF, 0x1C, 0x1D, 0x1E, 0x1F};
+//
+//  int32x4_t tmp0 = vec_perm(a_0, a_1, p0);
+//  int32x4_t tmp1 = vec_perm(a_0, a_1, p1);
+//  int32x4_t tmp2 = vec_perm(a_2, a_3, p0);
+//  int32x4_t tmp3 = vec_perm(a_2, a_3, p1);
 
   // a_0
   //temp[0]
