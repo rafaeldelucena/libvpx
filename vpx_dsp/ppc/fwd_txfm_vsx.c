@@ -383,10 +383,10 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 //  int16x8_t temp0 = vec_add(a_0, a_1);
 //  int16x8_t temp1 = vec_add(a_2, a_3);
 
-  int32x4_t tmp1 = vec_add(h_0_0, h_0_1);
-  int32x4_t tmp0 = vec_add(l_0_0, l_0_1);
-  int32x4_t tmp3 = vec_add(h_0_2, h_0_3);
-  int32x4_t tmp2 = vec_add(l_0_2, l_0_3);
+  int32x4_t tmp0 = vec_add(h_0_0, h_0_1);
+  int32x4_t tmp1 = vec_add(l_0_0, l_0_1);
+  int32x4_t tmp2 = vec_add(h_0_2, h_0_3);
+  int32x4_t tmp3 = vec_add(l_0_2, l_0_3);
 
 //  uint8x16_t p0 = {0x0, 0x1, 0x2, 0x3, 0x10, 0x11, 0x12, 0x13, 0x4, 0x5, 0x6, 0x7, 0x14, 0x15, 0x16, 0x17};
 //  uint8x16_t p1 = {0x8, 0x9, 0xA, 0xB, 0x18, 0x19, 0x1A, 0x1B, 0xC, 0xD, 0xE, 0xF, 0x1C, 0x1D, 0x1E, 0x1F};
