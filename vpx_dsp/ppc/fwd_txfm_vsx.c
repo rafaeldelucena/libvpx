@@ -358,7 +358,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   int32x4_t h_0_2 = vec_mergeh(e_0_2, o_0_2);
   int32x4_t l_0_2 = vec_mergel(e_0_2, o_0_2);
 
-  uint8x16_t perm4 = {0x14, 0x15, 0xC, 0xD, 0xC, 0xD, 0x14, 0x15, 0xE, 0xF, 0x16, 0x17, 0xE, 0xF, 0x16, 0x17};
+  uint8x16_t perm4 = {0xC, 0xD, 0x14, 0x15, 0xC, 0xD, 0x14, 0x15, 0xE, 0xF, 0x16, 0x17, 0xE, 0xF, 0x16, 0x17};
   int16x8_t x_0_3 = vec_perm(step1, step2, perm4);
   int16x8_t cospi_0_3 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
   printf("---------------------------------------- BEFORE MULTIPLYING 3\n");
