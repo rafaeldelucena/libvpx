@@ -139,11 +139,11 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     int32x4_t temp3 = fdct_vector_round_shift(tmp3);
 
 #ifdef WORDS_BIGENDIAN
-    int16x8_t out1 = vec_pack(temp9, temp8);
-    int16x8_t out2 = vec_pack(tempB, tempA);
+    int16x8_t out1 = vec_pack(temp1, temp0);
+    int16x8_t out2 = vec_pack(temp3, temp2);
 #else
-    int16x8_t out1 = vec_pack(temp8, temp9);
-    int16x8_t out2 = vec_pack(tempA, tempB);
+    int16x8_t out1 = vec_pack(temp0, temp1);
+    int16x8_t out2 = vec_pack(temp2, temp3);
 #endif // WORDS_BIGENDIAN
 
     store_tran_low(out1, 0, intermediate);
