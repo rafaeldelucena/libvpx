@@ -137,10 +137,10 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     int32x4_t tmp3 = vec_add(l_0_2, l_0_3);
 
     int32x4_t v[4];
-    int32x4_t v[0] = fdct_vector_round_shift(tmp0);
-    int32x4_t v[1] = fdct_vector_round_shift(tmp1);
-    int32x4_t v[2] = fdct_vector_round_shift(tmp2);
-    int32x4_t v[3] = fdct_vector_round_shift(tmp3);
+    v[0] = fdct_vector_round_shift(tmp0);
+    v[1] = fdct_vector_round_shift(tmp1);
+    v[2] = fdct_vector_round_shift(tmp2);
+    v[3] = fdct_vector_round_shift(tmp3);
 
     vpx_transpose_s32_4x4(v);
 
