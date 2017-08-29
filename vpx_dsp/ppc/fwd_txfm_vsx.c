@@ -134,7 +134,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     v[2] = vec_add(h_0_2, h_0_3);
     v[3] = vec_add(l_0_2, l_0_3);
 
-    vpx_transpose_s32_4x4(v[4]);
+    vpx_transpose_s32_4x4(v);
 
 #ifdef WORDS_BIGENDIAN
     int16x8_t out1 = vec_pack(v[1], v[0]);
