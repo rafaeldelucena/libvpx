@@ -84,7 +84,9 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // Do the two transform/transpose passes
   {
     int16x8_t in1 = vec_vsx_ld(0, input);
-    int16x8_t in2 = vec_vsx_ld(0, input + (2 * stride));
+    int16x8_t in0 = vec_vsx_ld(0, input + (2 * stride));
+    uint8x16_t perm0 = {0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7};
+    int16x8_t in2 = vec_perm(in0, in0, perm0);
 
     if (in1[0]) {
       ++in1[0];
@@ -129,11 +131,16 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     int32x4_t h_0_3 = vec_mergeh(e_0_3, o_0_3);
     int32x4_t l_0_3 = vec_mergel(e_0_3, o_0_3);
 
+    tmp0 = vec_add(h_0_0, h_0_1);
+    tmp1 = vec_add(l_0_0, l_0_1);
+    tmp2 = vec_add(h_0_2, h_0_3);
+    tmp3 = vec_add(l_0_2, l_0_3);
+
     int32x4_t v[4];
-    v[0] = vec_add(h_0_0, h_0_1);
-    v[1] = vec_add(l_0_0, l_0_1);
-    v[2] = vec_add(h_0_2, h_0_3);
-    v[3] = vec_add(l_0_2, l_0_3);
+    int32x4_t v[0] = fdct_vector_round_shift(tmp0);
+    int32x4_t v[1] = fdct_vector_round_shift(tmp1);
+    int32x4_t v[2] = fdct_vector_round_shift(tmp2);
+    int32x4_t v[3] = fdct_vector_round_shift(tmp3);
 
     vpx_transpose_s32_4x4(v);
 
