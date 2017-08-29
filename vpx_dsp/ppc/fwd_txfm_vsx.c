@@ -137,11 +137,11 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     vpx_transpose_s32_4x4(v[4]);
 
 #ifdef WORDS_BIGENDIAN
-    int16x8_t out1 = vec_pack(temp1, temp0);
-    int16x8_t out2 = vec_pack(temp3, temp2);
+    int16x8_t out1 = vec_pack(v[1], v[0]);
+    int16x8_t out2 = vec_pack(v[3], v[2]);
 #else
-    int16x8_t out1 = vec_pack(temp0, temp1);
-    int16x8_t out2 = vec_pack(temp2, temp3);
+    int16x8_t out1 = vec_pack(v[0], v[1]);
+    int16x8_t out2 = vec_pack(v[2], v[3]);
 #endif // WORDS_BIGENDIAN
 
     store_tran_low(out1, 0, intermediate);
