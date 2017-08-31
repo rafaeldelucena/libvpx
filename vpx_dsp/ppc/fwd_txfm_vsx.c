@@ -194,8 +194,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 
       cospi_0 = {cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64};
 
-      int32x4_t e_0 = vec_mule(step_0, cospi_0);
-      int32x4_t o_0 = vec_mulo(step_0, cospi_0);
+      int32x4_t e_0 = vec_mule(step0, cospi_0);
+      int32x4_t o_0 = vec_mulo(step0, cospi_0);
       int32x4_t h_0 = vec_mergeh(e_0, o_0);
       int32x4_t l_0 = vec_mergel(e_0, o_0);
 
@@ -210,8 +210,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 
       cospi_1 = {cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, -cospi_16_64, -cospi_16_64, -cospi_16_64, -cospi_16_64};
 
-      int32x4_t e_1 = vec_mule(step_1, cospi_1);
-      int32x4_t o_1 = vec_mulo(step_1, cospi_1);
+      int32x4_t e_1 = vec_mule(step0, cospi_1);
+      int32x4_t o_1 = vec_mulo(step0, cospi_1);
       int32x4_t h_1 = vec_mergeh(e_1, o_1);
       int32x4_t l_1 = vec_mergel(e_1, o_1);
 
@@ -226,8 +226,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 
       cospi_2 = {cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_8_64, cospi_8_64, cospi_8_64, cospi_8_64};
 
-      int32x4_t e_2 = vec_mule(step_2, cospi_2);
-      int32x4_t o_2 = vec_mulo(step_2, cospi_2);
+      int32x4_t e_2 = vec_mule(step1, cospi_2);
+      int32x4_t o_2 = vec_mulo(step1, cospi_2);
       int32x4_t h_2 = vec_mergeh(e_2, o_2);
       int32x4_t l_2 = vec_mergel(e_2, o_2);
 
@@ -242,8 +242,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 
       cospi_3 = {cospi_8_64, cospi_8_64, cospi_8_64, cospi_8_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64};
 
-      int32x4_t e_3 = vec_mule(step_3, cospi_3);
-      int32x4_t o_3 = vec_mulo(step_3, cospi_3);
+      int32x4_t e_3 = vec_mule(step1, cospi_3);
+      int32x4_t o_3 = vec_mulo(step1, cospi_3);
       int32x4_t h_3 = vec_mergeh(e_3, o_3);
       int32x4_t l_3 = vec_mergel(e_3, o_3);
 
