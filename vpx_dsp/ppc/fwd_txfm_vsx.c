@@ -110,25 +110,25 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     {
       // Load inputs.
       {
-        loaded[0] = input[0 * stride] * 16;
-        loaded[4] = (input[0 * stride + 1]) * 16;
-        loaded[8] = (input[0 * stride + 2]) * 16;
-        loaded[12] = (input[0 * stride + 3]) * 16;
+        loaded[0] = input[0 * stride];
+        loaded[4] = input[0 * stride + 1];
+        loaded[8] = input[0 * stride + 2];
+        loaded[12] = input[0 * stride + 3];
 
-        loaded[1] = input[1 * stride] * 16;
-        loaded[5] = (input[1 * stride + 1]) * 16;
-        loaded[9] = (input[1 * stride + 2]) * 16;
-        loaded[13] = (input[1 * stride + 3]) * 16;
+        loaded[1] = input[1 * stride];
+        loaded[5] = input[1 * stride + 1];
+        loaded[9] = input[1 * stride + 2];
+        loaded[13] = input[1 * stride + 3];
 
-        loaded[2] = input[2 * stride] * 16;
-        loaded[6] = (input[2 * stride + 1]) * 16;
-        loaded[10] = (input[2 * stride + 2]) * 16;
-        loaded[14] = (input[2 * stride + 3]) * 16;
+        loaded[2] = input[2 * stride];
+        loaded[6] = input[2 * stride + 1];
+        loaded[10] = input[2 * stride + 2];
+        loaded[14] = input[2 * stride + 3];
 
-        loaded[3] = input[3 * stride] * 16;
-        loaded[7] = (input[3 * stride + 1]) * 16;
-        loaded[11] = (input[3 * stride + 2]) * 16;
-        loaded[15] = (input[3 * stride + 3]) * 16;
+        loaded[3] = input[3 * stride];
+        loaded[7] = input[3 * stride + 1];
+        loaded[11] = input[3 * stride + 2];
+        loaded[15] = input[3 * stride + 3];
 
         in_high[0] = loaded[0] * 16;
         in_high[4] = loaded[4] * 16;
