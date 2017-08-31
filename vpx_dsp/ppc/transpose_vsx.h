@@ -98,4 +98,19 @@ static INLINE void vpx_transpose_s16_8x8(int16x8_t v[8]) {
   // v[7]: 07 17 27 37 47 57 67 77
 }
 
+static INLINE void vpx_transpose_s32_4x4(int32x4_t v[4]) {
+    int32x4_t b0, b1, b2, b3;
+    int32x4_t c0, c1, c2, c3;
+
+    b0 = vec_mergeh(v[0], v[2]);
+    b1 = vec_mergel(v[0], v[2]);
+    b2 = vec_mergeh(v[1], v[3]);
+    b3 = vec_mergel(v[1], v[3]);
+
+    v[0] = vec_mergeh(b0, b2);
+    v[1] = vec_mergel(b0, b2);
+    v[2] = vec_mergeh(b1, b3);
+    v[3] = vec_mergel(b1, b3);
+}
+
 #endif  // VPX_DSP_PPC_TRANSPOSE_VSX_H_
