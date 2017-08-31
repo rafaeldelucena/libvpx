@@ -102,6 +102,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // Do the two transform/transpose passes
   {
     tran_high_t in_high[16];    // canbe16
+    tran_high_t loaded[16];    // canbe16
     tran_high_t temp[16];  // needs32
     tran_high_t step[16];  // needs32
 
@@ -109,24 +110,45 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     {
       // Load inputs.
       {
-        in_high[0] = input[0 * stride] * 16;
-        in_high[1] = input[1 * stride] * 16;
-        in_high[2] = input[2 * stride] * 16;
-        in_high[3] = input[3 * stride] * 16;
-        in_high[4] = (input[0 * stride + 1]) * 16;
-        in_high[5] = (input[1 * stride + 1]) * 16;
-        in_high[6] = (input[2 * stride + 1]) * 16;
-        in_high[7] = (input[3 * stride + 1]) * 16;
+        loaded[0] = input[0 * stride] * 16;
+        loaded[4] = (input[0 * stride + 1]) * 16;
+        loaded[8] = (input[0 * stride + 2]) * 16;
+        loaded[12] = (input[0 * stride + 3]) * 16;
 
-        in_high[8] = (input[0 * stride + 2]) * 16;
-        in_high[9] = (input[1 * stride + 2]) * 16;
-        in_high[10] = (input[2 * stride + 2]) * 16;
-        in_high[11] = (input[3 * stride + 2]) * 16;
+        loaded[1] = input[1 * stride] * 16;
+        loaded[5] = (input[1 * stride + 1]) * 16;
+        loaded[9] = (input[1 * stride + 2]) * 16;
+        loaded[13] = (input[1 * stride + 3]) * 16;
 
-        in_high[12] = (input[0 * stride + 3]) * 16;
-        in_high[13] = (input[1 * stride + 3]) * 16;
-        in_high[14] = (input[2 * stride + 3]) * 16;
-        in_high[15] = (input[3 * stride + 3]) * 16;
+        loaded[2] = input[2 * stride] * 16;
+        loaded[6] = (input[2 * stride + 1]) * 16;
+        loaded[10] = (input[2 * stride + 2]) * 16;
+        loaded[14] = (input[2 * stride + 3]) * 16;
+
+        loaded[3] = input[3 * stride] * 16;
+        loaded[7] = (input[3 * stride + 1]) * 16;
+        loaded[11] = (input[3 * stride + 2]) * 16;
+        loaded[15] = (input[3 * stride + 3]) * 16;
+
+        in_high[0] = loaded[0] * 16;
+        in_high[4] = loaded[4] * 16;
+        in_high[8] = loaded[8] * 16;
+        in_high[12] = loaded[12] * 16;
+
+        in_high[1] = loaded[1] * 16;
+        in_high[5] = loaded[5] * 16;
+        in_high[9] = loaded[9] * 16;
+        in_high[13] = loaded[13] * 16;
+
+        in_high[2] = loaded[2] * 16;
+        in_high[6] =  loaded[6] * 16;
+        in_high[10] = loaded[10] * 16;
+        in_high[14] = loaded[14] * 16;
+
+        in_high[3] = loaded[3] * 16;
+        in_high[7] = loaded[7] * 16;
+        in_high[11] = loaded[11] * 16;
+        in_high[15] = loaded[15] * 16;
 
         if (in_high[0]) {
           ++in_high[0];
@@ -135,78 +157,78 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       // Transform.
       //step1 = vec_add(in_high1, in_high2);
       step[0] = in_high[0] + in_high[3];
-      step[1] = in_high[1] + in_high[2];
       step[4] = in_high[4] + in_high[7];
-      step[5] = in_high[5] + in_high[6];
       step[8] = in_high[8] + in_high[11];
-      step[9] = in_high[9] + in_high[10];
       step[12] = in_high[12] + in_high[15];
+      step[1] = in_high[1] + in_high[2];
+      step[5] = in_high[5] + in_high[6];
+      step[9] = in_high[9] + in_high[10];
       step[13] = in_high[13] + in_high[14];
 
       //step2 = vec_sub(in_high1, in_high2);
       step[3] = in_high[0] - in_high[3];
-      step[2] = in_high[1] - in_high[2];
       step[7] = in_high[4] - in_high[7];
-      step[6] = in_high[5] - in_high[6];
       step[11] = in_high[8] - in_high[11];
-      step[10] = in_high[9] - in_high[10];
       step[15] = in_high[12] - in_high[15];
+      step[2] = in_high[1] - in_high[2];
+      step[6] = in_high[5] - in_high[6];
+      step[10] = in_high[9] - in_high[10];
       step[14] = in_high[13] - in_high[14];
 
       tran_high_t x_0 = step[0] * cospi_16_64;
-      tran_high_t x_1 = step[1] * cospi_16_64;
-      tran_high_t x_2 = step[0] * cospi_16_64;
-      tran_high_t x_3 = step[1] * -cospi_16_64;
-      tran_high_t x_4 = step[2] * cospi_24_64;
-      tran_high_t x_5 = step[3] * cospi_8_64;
-      tran_high_t x_6 = step[2] * -cospi_8_64;
-      tran_high_t x_7 = step[3] * cospi_24_64;
-
       tran_high_t x_8 = step[4] * cospi_16_64;
-      tran_high_t x_9 = step[5] * cospi_16_64;
-      tran_high_t x_10 = step[4] * cospi_16_64;
-      tran_high_t x_11 = step[5] * -cospi_16_64;
-      tran_high_t x_12 = step[6] * cospi_24_64;
-      tran_high_t x_13 = step[7] * cospi_8_64;
-      tran_high_t x_14 = step[6] * -cospi_8_64;
-      tran_high_t x_15 = step[7] * cospi_24_64;
-
       tran_high_t x_16 = step[8] * cospi_16_64;
-      tran_high_t x_17 = step[9] * cospi_16_64;
-      tran_high_t x_18 = step[8] * cospi_16_64;
-      tran_high_t x_19 = step[9] * -cospi_16_64;
-      tran_high_t x_20 = step[10] * cospi_24_64;
-      tran_high_t x_21 = step[11] * cospi_8_64;
-      tran_high_t x_22 = step[10] * -cospi_8_64;
-      tran_high_t x_23 = step[11] * cospi_24_64;
-
       tran_high_t x_24 = step[12] * cospi_16_64;
+      tran_high_t x_1 = step[1] * cospi_16_64;
+      tran_high_t x_9 = step[5] * cospi_16_64;
+      tran_high_t x_17 = step[9] * cospi_16_64;
       tran_high_t x_25 = step[13] * cospi_16_64;
+
+      tran_high_t x_2 = step[0] * cospi_16_64;
+      tran_high_t x_10 = step[4] * cospi_16_64;
+      tran_high_t x_18 = step[8] * cospi_16_64;
       tran_high_t x_26 = step[12] * cospi_16_64;
+      tran_high_t x_3 = step[1] * -cospi_16_64;
+      tran_high_t x_11 = step[5] * -cospi_16_64;
+      tran_high_t x_19 = step[9] * -cospi_16_64;
       tran_high_t x_27 = step[13] * -cospi_16_64;
+
+      tran_high_t x_4 = step[2] * cospi_24_64;
+      tran_high_t x_12 = step[6] * cospi_24_64;
+      tran_high_t x_20 = step[10] * cospi_24_64;
       tran_high_t x_28 = step[14] * cospi_24_64;
+      tran_high_t x_5 = step[3] * cospi_8_64;
+      tran_high_t x_13 = step[7] * cospi_8_64;
+      tran_high_t x_21 = step[11] * cospi_8_64;
       tran_high_t x_29 = step[15] * cospi_8_64;
+
+      tran_high_t x_6 = step[2] * -cospi_8_64;
+      tran_high_t x_14 = step[6] * -cospi_8_64;
+      tran_high_t x_22 = step[10] * -cospi_8_64;
       tran_high_t x_30 = step[14] * -cospi_8_64;
+      tran_high_t x_7 = step[3] * cospi_24_64;
+      tran_high_t x_15 = step[7] * cospi_24_64;
+      tran_high_t x_23 = step[11] * cospi_24_64;
       tran_high_t x_31 = step[15] * cospi_24_64;
 
       temp[0] = x_0 + x_1;
-      temp[1] = x_2 + x_3;
-      temp[2] = x_4 + x_5;
-      temp[3] = x_6 + x_7;
-
       temp[4] = x_8 + x_9;
-      temp[5] = x_10 + x_11;
-      temp[6] = x_12 + x_13;
-      temp[7] = x_14 + x_15;
-
       temp[8] = x_16 + x_17;
-      temp[9] = x_18 + x_19;
-      temp[10] = x_20 + x_21;
-      temp[11] = x_22 + x_23;
-
       temp[12] = x_24 + x_25;
+
+      temp[1] = x_2 + x_3;
+      temp[5] = x_10 + x_11;
+      temp[9] = x_18 + x_19;
       temp[13] = x_26 + x_27;
+
+      temp[2] = x_4 + x_5;
+      temp[6] = x_12 + x_13;
+      temp[10] = x_20 + x_21;
       temp[14] = x_28 + x_29;
+
+      temp[3] = x_6 + x_7;
+      temp[7] = x_14 + x_15;
+      temp[11] = x_22 + x_23;
       temp[15] = x_30 + x_31;
 
       intermediate[0] = (tran_low_t)fdct_round_shift(temp[0]);
