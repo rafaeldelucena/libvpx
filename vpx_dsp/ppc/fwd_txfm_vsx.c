@@ -147,8 +147,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //in_high[11] = loaded[11] * 16;
       //in_high[15] = loaded[15] * 16;
       //
-      int16x8_t loaded0 = vec_vsx_ld(0, intermediate);
-      int16x8_t loaded1 = vec_vsx_ld(0, intermediate + (2 * stride));
+      int16x8_t loaded0 = vec_vsx_ld(0, input);
+      int16x8_t loaded1 = vec_vsx_ld(0, input + (2 * stride));
       uint16x8_t four = vec_splat_u16(4);
 
       int16x8_t in_high0 = vec_sl(loaded0, four);
