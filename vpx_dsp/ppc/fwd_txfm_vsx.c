@@ -192,7 +192,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //tran_high_t x_17 = step[9] * cospi_16_64;
       //tran_high_t x_25 = step[13] * cospi_16_64;
 
-      cospi_0 = {cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64};
+      int16x8_t cospi_0 = {cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64};
 
       int32x4_t e_0 = vec_mule(step0, cospi_0);
       int32x4_t o_0 = vec_mulo(step0, cospi_0);
@@ -208,7 +208,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //tran_high_t x_19 = step[9] * -cospi_16_64;
       //tran_high_t x_27 = step[13] * -cospi_16_64;
 
-      cospi_1 = {cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, -cospi_16_64, -cospi_16_64, -cospi_16_64, -cospi_16_64};
+      int16x8_t cospi_1 = {cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, -cospi_16_64, -cospi_16_64, -cospi_16_64, -cospi_16_64};
 
       int32x4_t e_1 = vec_mule(step0, cospi_1);
       int32x4_t o_1 = vec_mulo(step0, cospi_1);
@@ -224,7 +224,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //tran_high_t x_21 = step[11] * cospi_8_64;
       //tran_high_t x_29 = step[15] * cospi_8_64;
 
-      cospi_2 = {cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_8_64, cospi_8_64, cospi_8_64, cospi_8_64};
+      int16x8_t cospi_2 = {cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_8_64, cospi_8_64, cospi_8_64, cospi_8_64};
 
       int32x4_t e_2 = vec_mule(step1, cospi_2);
       int32x4_t o_2 = vec_mulo(step1, cospi_2);
@@ -240,7 +240,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //tran_high_t x_23 = step[11] * cospi_24_64;
       //tran_high_t x_31 = step[15] * cospi_24_64;
 
-      cospi_3 = {cospi_8_64, cospi_8_64, cospi_8_64, cospi_8_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64};
+      int16x8_t cospi_3 = {cospi_8_64, cospi_8_64, cospi_8_64, cospi_8_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64};
 
       int32x4_t e_3 = vec_mule(step1, cospi_3);
       int32x4_t o_3 = vec_mulo(step1, cospi_3);
