@@ -149,8 +149,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //
       uint16x8_t four = vec_splat_u16(4);
       uint8x16_t perm0 = {0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7};
-      int16x8_t loaded0 = vec_vsx_ld(0, input + (2 * stride));
       int16x8_t loaded1 = vec_vsx_ld(0, input);
+      int16x8_t loaded0 = vec_vsx_ld(0, input + (2 * stride));
       int16x8_t loaded2 = vec_perm(loaded0, loaded0, perm0);
 
       int16x8_t in_high0 = vec_sl(loaded1, four);
@@ -271,8 +271,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 
       int32x4_t v[4];
       v[0] = vec_add(h_0, l_0);
-      v[1] = vec_add(h_1, l_1);
-      v[2] = vec_add(h_2, l_2);
+      v[2] = vec_add(h_1, l_1);
+      v[1] = vec_add(h_2, l_2);
       v[3] = vec_add(h_3, l_3);
 
       vpx_transpose_s32_4x4(v);
