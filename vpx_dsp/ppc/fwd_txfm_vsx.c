@@ -240,7 +240,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //tran_high_t x_23 = step[11] * cospi_24_64;
       //tran_high_t x_31 = step[15] * cospi_24_64;
 
-      int16x8_t cospi_3 = {cospi_8_64, cospi_8_64, cospi_8_64, cospi_8_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64};
+      int16x8_t cospi_3 = {-cospi_8_64, -cospi_8_64, -cospi_8_64, -cospi_8_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64};
 
       int32x4_t e_3 = vec_mule(step1, cospi_3);
       int32x4_t o_3 = vec_mulo(step1, cospi_3);
