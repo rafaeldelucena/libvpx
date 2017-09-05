@@ -298,8 +298,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //intermediate[15] = (tran_low_t)fdct_round_shift(temp[15]);
 
       int32x4_t temp8 = fdct_vector_round_shift(v[0]);
-      int32x4_t temp9 = fdct_vector_round_shift(v[1]);
-      int32x4_t tempA = fdct_vector_round_shift(v[2]);
+      int32x4_t temp9 = fdct_vector_round_shift(v[2]);
+      int32x4_t tempA = fdct_vector_round_shift(v[1]);
       int32x4_t tempB = fdct_vector_round_shift(v[3]);
 
 #ifdef WORDS_BIGENDIAN
