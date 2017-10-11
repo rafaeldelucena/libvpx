@@ -38,12 +38,23 @@
      a2[0], a2[1], a2[2], a2[3],\
      a3[0], a3[1], a3[2], a3[3])
 
-#define MATRIX_SI4_PRINT(a0,a1)\
+#define MATRIX_SI2_PRINT(a0,a1)\
     printf(\
     "0[ %04hx %04hx %04hx %04hx ]\n"\
     "1[ %04hx %04hx %04hx %04hx ]\n"\
     "2[ %04hx %04hx %04hx %04hx ]\n"\
     "3[ %04hx %04hx %04hx %04hx ]\n",\
+     a0[0], a0[1], a0[2], a0[3],\
+     a0[4], a0[5], a0[6], a0[7],\
+     a1[0], a1[1], a1[2], a1[3],\
+     a1[4], a1[5], a1[6], a1[7])
+
+#define MATRIX_II2_PRINT(a0,a1)\
+    printf(\
+    "0[ %d %d %d %d ]\n"\
+    "1[ %d %d %d %d ]\n"\
+    "2[ %d %d %d %d ]\n"\
+    "3[ %d %d %d %d ]\n",\
      a0[0], a0[1], a0[2], a0[3],\
      a0[4], a0[5], a0[6], a0[7],\
      a1[0], a1[1], a1[2], a1[3],\
@@ -60,6 +71,16 @@
      a0[2*4 +0], a0[2*4 +1], a0[2*4 +2], a0[2*4 +3],\
      a0[3*4 +0], a0[3*4 +1], a0[3*4 +2], a0[3*4 +3])
 
+#define MATRIX_II4_PRINT(a0,a1,a2,a3)\
+    printf(\
+    "0[ %d %d %d %d ]\n"\
+    "1[ %d %d %d %d ]\n"\
+    "2[ %d %d %d %d ]\n"\
+    "3[ %d %d %d %d ]\n",\
+     a0[0], a0[1], a0[2], a0[3],\
+     a1[0], a1[1], a1[2], a1[3],\
+     a2[0], a2[1], a2[2], a2[3],\
+     a3[0], a3[1], a3[2], a3[3])
 ///* Shift down with rounding */
 //#define ROUND_POWER_OF_TWO(value, n) (((value) + (1 << ((n)-1))) >> (n))
 //
@@ -99,6 +120,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // We need an intermediate buffer between passes.
   printf("---------------------------------------- INPUTS\n");
   MATRIX_H4_PRINT(input);
+  MATRIX_I4_PRINT(input);
   tran_low_t intermediate[16];
   // Do the two transform/transpose passes
   {
@@ -156,9 +178,17 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       int16x8_t in_high0 = vec_sl(loaded1, four);
       int16x8_t in_high1 = vec_sl(loaded2, four);
 
+      printf("---------------------------------------- TRANSFORM * 16\n");
+      MATRIX_SI2_PRINT(in_high0, in_high1);
+      MATRIX_II2_PRINT(in_high0, in_high1);
+
       if (in_high0[0]) {
         ++in_high0[0];
       }
+
+      printf("---------------------------------------- TRANSFORM A[1] + 1\n");
+      MATRIX_SI2_PRINT(in_high0, in_high1);
+      MATRIX_II2_PRINT(in_high0, in_high1);
 
       // Transform.
       //
@@ -180,10 +210,15 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //step[10] = in_high[9] - in_high[10];
       //step[14] = in_high[13] - in_high[14];
 
-      int16x8_t step0, step1;
+      int16x8_t step0, step1, step2;
 
       step0 = vec_add(in_high0, in_high1);
-      step1 = vec_sub(in_high0, in_high1);
+      step2 = vec_sub(in_high0, in_high1);
+      step1 = vec_perm(step2, step2, perm0);
+
+      printf("---------------------------------------- TRANSFORM ADD SUB\n");
+      MATRIX_SI2_PRINT(step0, step1);
+      MATRIX_II2_PRINT(step0, step1);
 
       //tran_high_t x_0 = step[0] * cospi_16_64;
       //tran_high_t x_8 = step[4] * cospi_16_64;
@@ -269,13 +304,31 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //temp[11] = x_22 + x_23;
       //temp[15] = x_30 + x_31;
 
+
+
+      printf("---------------------------------------- TRANSFORM LOWS * COSPI\n");
+      MATRIX_SS4_PRINT(l_0, l_1, l_2, l_3);
+      MATRIX_II4_PRINT(l_0, l_1, l_2, l_3);
+      printf("---------------------------------------- TRANSFORM HIGHS * COSPI\n");
+      MATRIX_SS4_PRINT(h_0, h_1, h_2, h_3);
+      MATRIX_II4_PRINT(h_0, h_1, h_2, h_3);
+
       int32x4_t v[4];
+
       v[0] = vec_add(h_0, l_0);
       v[2] = vec_add(h_1, l_1);
       v[1] = vec_add(h_2, l_2);
       v[3] = vec_add(h_3, l_3);
 
+      printf("---------------------------------------- TRANSFORM SUMMING\n");
+      MATRIX_SS4_PRINT(v[0], v[1], v[2], v[3]);
+      MATRIX_II4_PRINT(v[0], v[1], v[2], v[3]);
+
       vpx_transpose_s32_4x4(v);
+
+      printf("---------------------------------------- TRANSFORM TRANSPOSE\n");
+      MATRIX_SS4_PRINT(v[0], v[1], v[2], v[3]);
+      MATRIX_II4_PRINT(v[0], v[1], v[2], v[3]);
 
       //intermediate[0] = (tran_low_t)fdct_round_shift(temp[0]);
       //intermediate[1] = (tran_low_t)fdct_round_shift(temp[2]);
@@ -298,9 +351,13 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       //intermediate[15] = (tran_low_t)fdct_round_shift(temp[15]);
 
       int32x4_t temp8 = fdct_vector_round_shift(v[0]);
-      int32x4_t temp9 = fdct_vector_round_shift(v[2]);
-      int32x4_t tempA = fdct_vector_round_shift(v[1]);
+      int32x4_t temp9 = fdct_vector_round_shift(v[1]);
+      int32x4_t tempA = fdct_vector_round_shift(v[2]);
       int32x4_t tempB = fdct_vector_round_shift(v[3]);
+
+      printf("---------------------------------------- TRANSFORM ROUNDING\n");
+      MATRIX_SS4_PRINT(v[0], v[1], v[2], v[3]);
+      MATRIX_II4_PRINT(v[0], v[1], v[2], v[3]);
 
 #ifdef WORDS_BIGENDIAN
       int16x8_t out1 = vec_pack(temp9, temp8);
@@ -316,6 +373,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
       // Do next column (which is a transposed row in second/horizontal pass)
       printf("---------------------------------------- TRANSFORM INTERMEDIATE\n");
       MATRIX_H4_PRINT(intermediate);
+      MATRIX_I4_PRINT(intermediate);
     }
   }
   // Transform.
@@ -343,19 +401,19 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   int16x8_t in1 = vec_vsx_ld(0, intermediate);
   int16x8_t in0 = vec_vsx_ld(0, intermediate + (2 * stride));
   printf("---------------------------------------- AFTER LOAD\n");
-  MATRIX_SI4_PRINT(in1, in0);
+  MATRIX_SI2_PRINT(in1, in0);
   uint8x16_t perm0 = {0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7};
 
   int16x8_t in2 = vec_perm(in0, in0, perm0);
 
   printf("---------------------------------------- AFTER PERMUTATION\n");
-  MATRIX_SI4_PRINT(in1, in2);
+  MATRIX_SI2_PRINT(in1, in2);
 
   int16x8_t step1 = vec_add(in1, in2);
   int16x8_t step2 = vec_sub(in1, in2);
 
   printf("---------------------------------------- AFTER SUM\n");
-  MATRIX_SI4_PRINT(step1, step2);
+  MATRIX_SI2_PRINT(step1, step2);
 
   // e_0_0
   //tran_high_t x_0_0 = step_0 * cospi_16_64;
@@ -451,7 +509,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   int16x8_t x_0_0 = vec_perm(step1, step2, perm1);
   int16x8_t cospi_0_0 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
   printf("---------------------------------------- BEFORE MULTIPLYING 0\n");
-  MATRIX_SI4_PRINT(x_0_0, cospi_0_0);
+  MATRIX_SI2_PRINT(x_0_0, cospi_0_0);
   int32x4_t e_0_0 = vec_mule(x_0_0, cospi_0_0);
   int32x4_t o_0_0 = vec_mulo(x_0_0, cospi_0_0);
   int32x4_t h_0_0 = vec_mergeh(e_0_0, o_0_0);
@@ -461,7 +519,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   int16x8_t x_0_1 = vec_perm(step1, step2, perm2);
   int16x8_t cospi_0_1 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
   printf("---------------------------------------- BEFORE MULTIPLYING 1\n");
-  MATRIX_SI4_PRINT(x_0_1, cospi_0_1);
+  MATRIX_SI2_PRINT(x_0_1, cospi_0_1);
   int32x4_t e_0_1 = vec_mule(x_0_1, cospi_0_1);
   int32x4_t o_0_1 = vec_mulo(x_0_1, cospi_0_1);
   int32x4_t h_0_1 = vec_mergeh(e_0_1, o_0_1);
@@ -471,7 +529,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   int16x8_t x_0_2 = vec_perm(step1, step2, perm3);
   int16x8_t cospi_0_2 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
   printf("---------------------------------------- BEFORE MULTIPLYING 2\n");
-  MATRIX_SI4_PRINT(x_0_2, cospi_0_2);
+  MATRIX_SI2_PRINT(x_0_2, cospi_0_2);
   int32x4_t e_0_2 = vec_mule(x_0_2, cospi_0_2);
   int32x4_t o_0_2 = vec_mulo(x_0_2, cospi_0_2);
   int32x4_t h_0_2 = vec_mergeh(e_0_2, o_0_2);
@@ -481,7 +539,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   int16x8_t x_0_3 = vec_perm(step1, step2, perm4);
   int16x8_t cospi_0_3 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
   printf("---------------------------------------- BEFORE MULTIPLYING 3\n");
-  MATRIX_SI4_PRINT(x_0_3, cospi_0_3);
+  MATRIX_SI2_PRINT(x_0_3, cospi_0_3);
   int32x4_t e_0_3 = vec_mule(x_0_3, cospi_0_3);
   int32x4_t o_0_3 = vec_mulo(x_0_3, cospi_0_3);
   int32x4_t h_0_3 = vec_mergeh(e_0_3, o_0_3);
@@ -615,7 +673,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 #endif // WORDS_BIGENDIAN
 
   printf("---------------------------------------- BEFORE STORE\n");
-  MATRIX_SI4_PRINT(out1, out2);
+  MATRIX_SI2_PRINT(out1, out2);
 
   store_tran_low(out1, 0, output);
   store_tran_low(out2, 0, output + (2* stride));
