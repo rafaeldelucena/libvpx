@@ -27,7 +27,7 @@ static INLINE int32x4_t fdct_vector_round_shift(int32x4_t input) {
   return vec_sra(sum, dct_const_1);
 }
 
-void vpx_fdct4x4_vsx(const int16_t *input, int16_t *output, int stride) {
+void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // The 2D transform is done with two passes which are actually pretty
   // similar. In the first one, we transform the columns and transpose
   // the results. In the second one, we transform the rows. To achieve that,
