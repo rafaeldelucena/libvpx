@@ -25,6 +25,7 @@
 #include "vpx/vpx_codec.h"
 #include "vpx/vpx_integer.h"
 #include "vpx_ports/mem.h"
+#include "vpx_ports/vpx_timer.h"
 
 using libvpx_test::ACMRandom;
 using libvpx_test::Buffer;
@@ -374,6 +375,28 @@ class TransTestBase {
     }
   }
 
+  void RunSpeedCheck(int times) {
+    Buffer<int16_t> input_block =
+      Buffer<int16_t>(size_, size_, 8, size_ == 4 ? 0 : 16);
+    ASSERT_TRUE(input_block.Init());
+
+    Buffer<tran_low_t> output_block =
+      Buffer<tran_low_t>(size_, size_, 0, 16);
+    ASSERT_TRUE(output_block.Init());
+
+    int i;
+    vpx_usec_timer timer;
+
+    vpx_usec_timer_start(&timer);
+    for (i = 0; i < times; ++i) {
+      ASM_REGISTER_STATE_CHECK(RunFwdTxfm(input_block, &output_block));
+    }
+    vpx_usec_timer_mark(&timer);
+
+    const int elapsed_time = static_cast<int>(vpx_usec_timer_elapsed(&timer));
+    printf("%s[%12d runs]: %d us\n", name, times, elapsed_time);
+  }
+
   FhtFuncRef fwd_txfm_ref;
   vpx_bit_depth_t bit_depth_;
   int tx_type_;
@@ -414,6 +437,12 @@ TEST_P(TransDCT, CoeffCheck) { RunCoeffCheck(); }
 TEST_P(TransDCT, MemCheck) { RunMemCheck(); }
 
 TEST_P(TransDCT, InvAccuracyCheck) { RunInvAccuracyCheck(1); }
+
+TEST_P(TransDCT, DISABLED_Speed) {
+  RunSpeedCheck(10);
+  RunSpeedCheck(10000);
+  RunSpeedCheck(10000000);
+}
 
 #if CONFIG_VP9_HIGHBITDEPTH
 INSTANTIATE_TEST_CASE_P(
