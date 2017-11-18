@@ -103,17 +103,17 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   tmp[2] = fdct_vector_round_shift(v[2]);
   tmp[3] = fdct_vector_round_shift(v[3]);
 
-  int16x8_t out1, out2;
+  int16x8_t out[2];
 #ifdef WORDS_BIGENDIAN
-  out1 = vec_pack(tmp[1], tmp[0]);
-  out2 = vec_pack(tmp[3], tmp[2]);
+  out[1] = vec_pack(tmp[1], tmp[0]);
+  out[1] = vec_pack(tmp[3], tmp[2]);
 #else
-  out1 = vec_pack(tmp[0], tmp[1]);
-  out2 = vec_pack(tmp[2], tmp[3]);
+  out[0] = vec_pack(tmp[0], tmp[1]);
+  out[1] = vec_pack(tmp[2], tmp[3]);
 #endif // WORDS_BIGENDIAN
 
-  vec_vsx_st(out1, 0, intermediate);
-  vec_vsx_st(out2, 0, intermediate + (2* stride));
+  vec_vsx_st(out[0], 0, intermediate);
+  vec_vsx_st(out[1], 0, intermediate + (2* stride));
 
   // Do next column (which is a transposed row in second/horizontal pass)
   // Transform.
