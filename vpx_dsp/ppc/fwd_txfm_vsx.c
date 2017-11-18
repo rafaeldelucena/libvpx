@@ -60,7 +60,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     ++in_high0[0];
   }
 
-  int16x8_t step[3]
+  int16x8_t step[3];
   step[0] = vec_perm(step[2], step[2], perm0);
   step[1] = vec_add(in_high0, in_high1);
   step[2] = vec_sub(in_high0, in_high1);
