@@ -67,8 +67,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   in_high[0] = vec_sl(loaded[0], four);
   in_high[1] = vec_sl(loaded[1], four);
 
-  if (in_high0[0][0]) {
-    ++in_high0[0][0];
+  if (in_high[0][0]) {
+    ++in_high[0][0];
   }
 
   step[0] = vec_add(in_high[0], in_high[1]);
