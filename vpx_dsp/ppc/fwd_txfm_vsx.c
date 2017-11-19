@@ -105,7 +105,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
 
   int16x8_t out[2];
 #ifdef WORDS_BIGENDIAN
-  out[1] = vec_pack(tmp[1], tmp[0]);
+  out[0] = vec_pack(tmp[1], tmp[0]);
   out[1] = vec_pack(tmp[3], tmp[2]);
 #else
   out[0] = vec_pack(tmp[0], tmp[1]);
@@ -123,14 +123,11 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   uint8x16_t perm3 = {0x4, 0x5, 0x1C, 0x1D, 0x4, 0x5, 0x1C, 0x1D, 0x6, 0x7, 0x1E, 0x1F, 0x6, 0x7, 0x1E, 0x1F};
   uint8x16_t perm4 = {0xC, 0xD, 0x14, 0x15, 0xC, 0xD, 0x14, 0x15, 0xE, 0xF, 0x16, 0x17, 0xE, 0xF, 0x16, 0x17};
 
-  int16x8_t in1, in0, in2;
-  in1 = vec_vsx_ld(0, intermediate);
-  in0 = vec_vsx_ld(0, intermediate + (2 * stride));
-  in2 = vec_perm(in0, in0, perm0);
+  out[1] = vec_perm(out[1], out[1], perm0);
 
   int16x8_t step1, step2;
-  step1 = vec_add(in1, in2);
-  step2 = vec_sub(in1, in2);
+  step1 = vec_add(out[0], out[1]);
+  step2 = vec_sub(out[0], out[1]);
 
   int16x8_t cospi_0_0 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
   int16x8_t cospi_0_1 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
