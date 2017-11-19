@@ -71,8 +71,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     ++in_high0[0][0];
   }
 
-  step[0] = vec_add(in_high0, in_high1);
-  step[1] = vec_sub(in_high0, in_high1);
+  step[0] = vec_add(in_high[0], in_high[1]);
+  step[1] = vec_sub(in_high[0], in_high[1]);
   step[1] = vec_perm(step[1], step[1], perm0);
 
   e[0] = vec_mule(step[0], cospi_0);
