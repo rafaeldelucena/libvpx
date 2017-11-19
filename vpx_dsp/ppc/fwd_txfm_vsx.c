@@ -60,32 +60,32 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     ++in_high0[0];
   }
 
-  int16x8_t step[3];
-  step[0] = vec_perm(step[2], step[2], perm0);
-  step[1] = vec_add(in_high0, in_high1);
-  step[2] = vec_sub(in_high0, in_high1);
+  int16x8_t step[2];
+  step[0] = vec_add(in_high0, in_high1);
+  step[1] = vec_sub(in_high0, in_high1);
+  step[1] = vec_perm(step[1], step[1], perm0);
 
   int32x4_t e_0, o_0, h_0, l_0;
-  e_0 = vec_mule(step[1], cospi_0);
-  o_0 = vec_mulo(step[1], cospi_0);
+  e_0 = vec_mule(step[0], cospi_0);
+  o_0 = vec_mulo(step[0], cospi_0);
   h_0 = vec_mergeh(e_0, o_0);
   l_0 = vec_mergel(e_0, o_0);
 
   int32x4_t e_1, o_1, h_1, l_1;
-  e_1 = vec_mule(step[1], cospi_1);
-  o_1 = vec_mulo(step[1], cospi_1);
+  e_1 = vec_mule(step[0], cospi_1);
+  o_1 = vec_mulo(step[0], cospi_1);
   h_1 = vec_mergeh(e_1, o_1);
   l_1 = vec_mergel(e_1, o_1);
 
   int32x4_t e_2, o_2, h_2, l_2;
-  e_2 = vec_mule(step[0], cospi_2);
-  o_2 = vec_mulo(step[0], cospi_2);
+  e_2 = vec_mule(step[1], cospi_2);
+  o_2 = vec_mulo(step[1], cospi_2);
   h_2 = vec_mergeh(e_2, o_2);
   l_2 = vec_mergel(e_2, o_2);
 
   int32x4_t e_3, o_3, h_3, l_3;
-  e_3 = vec_mule(step[0], cospi_3);
-  o_3 = vec_mulo(step[0], cospi_3);
+  e_3 = vec_mule(step[1], cospi_3);
+  o_3 = vec_mulo(step[1], cospi_3);
   h_3 = vec_mergeh(e_3, o_3);
   l_3 = vec_mergel(e_3, o_3);
 
