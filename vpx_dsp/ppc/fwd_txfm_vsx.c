@@ -14,7 +14,6 @@
 #include "vpx_dsp/fwd_txfm.h"
 #include "vpx_dsp/ppc/types_vsx.h"
 #include "vpx_dsp/ppc/transpose_vsx.h"
-#include "vpx_dsp/ppc/bitdepth_conversion_vsx.h"
 
 static INLINE int32x4_t fdct_vector_round_shift(int32x4_t input) {
   uint32x4_t dct_const_0, dct_const_1;
@@ -50,15 +49,15 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   uint8x16_t perm3 = {0x4, 0x5, 0x1C, 0x1D, 0x4, 0x5, 0x1C, 0x1D, 0x6, 0x7, 0x1E, 0x1F, 0x6, 0x7, 0x1E, 0x1F};
   uint8x16_t perm4 = {0xC, 0xD, 0x14, 0x15, 0xC, 0xD, 0x14, 0x15, 0xE, 0xF, 0x16, 0x17, 0xE, 0xF, 0x16, 0x17};
 
-  int16x8_t cospi_0 = {cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64};
-  int16x8_t cospi_1 = {cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, -cospi_16_64, -cospi_16_64, -cospi_16_64, -cospi_16_64};
-  int16x8_t cospi_2 = {cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_8_64, cospi_8_64, cospi_8_64, cospi_8_64};
-  int16x8_t cospi_3 = {-cospi_8_64, -cospi_8_64, -cospi_8_64, -cospi_8_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64};
+  int16x8_t cospi_0_0 = {cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64};
+  int16x8_t cospi_0_1 = {cospi_16_64, cospi_16_64, cospi_16_64, cospi_16_64, -cospi_16_64, -cospi_16_64, -cospi_16_64, -cospi_16_64};
+  int16x8_t cospi_0_2 = {cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_8_64, cospi_8_64, cospi_8_64, cospi_8_64};
+  int16x8_t cospi_0_3 = {-cospi_8_64, -cospi_8_64, -cospi_8_64, -cospi_8_64, cospi_24_64, cospi_24_64, cospi_24_64, cospi_24_64};
 
-  int16x8_t cospi_0_0 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
-  int16x8_t cospi_0_1 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
-  int16x8_t cospi_0_2 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
-  int16x8_t cospi_0_3 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
+  int16x8_t cospi_1_0 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
+  int16x8_t cospi_1_1 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
+  int16x8_t cospi_1_2 = {cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64, cospi_16_64, cospi_24_64, cospi_16_64, -cospi_8_64};
+  int16x8_t cospi_1_3 = {cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64, cospi_16_64, cospi_8_64, -cospi_16_64, cospi_24_64};
 
   loaded[0] = vec_vsx_ld(0, input);
   loaded[1] = vec_vsx_ld(0, input + (2 * stride));
@@ -75,15 +74,15 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   step[1] = vec_sub(in_high[0], in_high[1]);
   step[1] = vec_perm(step[1], step[1], perm0);
 
-  e[0] = vec_mule(step[0], cospi_0);
-  e[1] = vec_mule(step[0], cospi_1);
-  e[2] = vec_mule(step[1], cospi_2);
-  e[3] = vec_mule(step[1], cospi_3);
+  e[0] = vec_mule(step[0], cospi_0_0);
+  e[1] = vec_mule(step[0], cospi_0_1);
+  e[2] = vec_mule(step[1], cospi_0_2);
+  e[3] = vec_mule(step[1], cospi_0_3);
 
-  o[0] = vec_mulo(step[0], cospi_0);
-  o[1] = vec_mulo(step[0], cospi_1);
-  o[2] = vec_mulo(step[1], cospi_2);
-  o[3] = vec_mulo(step[1], cospi_3);
+  o[0] = vec_mulo(step[0], cospi_0_0);
+  o[1] = vec_mulo(step[0], cospi_0_1);
+  o[2] = vec_mulo(step[1], cospi_0_2);
+  o[3] = vec_mulo(step[1], cospi_0_3);
 
   h[0] = vec_mergeh(e[0], o[0]);
   h[1] = vec_mergeh(e[1], o[1]);
@@ -96,23 +95,23 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   l[3] = vec_mergel(e[3], o[3]);
 
   v[0] = vec_add(h[0], l[0]);
-  v[2] = vec_add(h[1], l[1]);
   v[1] = vec_add(h[2], l[2]);
+  v[2] = vec_add(h[1], l[1]);
   v[3] = vec_add(h[3], l[3]);
 
-  vpx_transpose_s32_4x4(v);
+  tmp[0] = fdct_vector_round_shift(v[0]);
+  tmp[1] = fdct_vector_round_shift(v[1]);
+  tmp[2] = fdct_vector_round_shift(v[2]);
+  tmp[3] = fdct_vector_round_shift(v[3]);
 
-  v[0] = fdct_vector_round_shift(v[0]);
-  v[1] = fdct_vector_round_shift(v[1]);
-  v[2] = fdct_vector_round_shift(v[2]);
-  v[3] = fdct_vector_round_shift(v[3]);
+  vpx_transpose_s32_4x4(tmp);
 
 #ifdef WORDS_BIGENDIAN
-  out[0] = vec_pack(v[1], v[0]);
-  out[1] = vec_pack(v[3], v[2]);
+  out[0] = vec_pack(tmp[1], tmp[0]);
+  out[1] = vec_pack(tmp[3], tmp[2]);
 #else
-  out[0] = vec_pack(v[0], v[1]);
-  out[1] = vec_pack(v[2], v[3]);
+  out[0] = vec_pack(tmp[0], tmp[1]);
+  out[1] = vec_pack(tmp[2], tmp[3]);
 #endif // WORDS_BIGENDIAN
 
   // Do next column (which is a transposed row in second/horizontal pass)
@@ -128,15 +127,15 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   x[2] = vec_perm(step[0], step[1], perm3);
   x[3] = vec_perm(step[0], step[1], perm4);
 
-  e[0] = vec_mule(x[0], cospi_0_0);
-  e[1] = vec_mule(x[1], cospi_0_1);
-  e[2] = vec_mule(x[2], cospi_0_2);
-  e[3] = vec_mule(x[3], cospi_0_3);
+  e[0] = vec_mule(x[0], cospi_1_0);
+  e[1] = vec_mule(x[1], cospi_1_1);
+  e[2] = vec_mule(x[2], cospi_1_2);
+  e[3] = vec_mule(x[3], cospi_1_3);
 
-  o[0] = vec_mulo(x[0], cospi_0_0);
-  o[1] = vec_mulo(x[1], cospi_0_1);
-  o[2] = vec_mulo(x[2], cospi_0_2);
-  o[3] = vec_mulo(x[3], cospi_0_3);
+  o[0] = vec_mulo(x[0], cospi_1_0);
+  o[1] = vec_mulo(x[1], cospi_1_1);
+  o[2] = vec_mulo(x[2], cospi_1_2);
+  o[3] = vec_mulo(x[3], cospi_1_3);
 
   h[0] = vec_mergeh(e[0], o[0]);
   h[1] = vec_mergeh(e[1], o[1]);
