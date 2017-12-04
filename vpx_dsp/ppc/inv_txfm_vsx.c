@@ -152,8 +152,9 @@ void vpx_idct4x4_16_add_vsx(const tran_low_t *input, uint8_t *dest,
   output_v = vec_packsu(tmp16_0, tmp16_1);
 
   vec_vsx_st(output_v, 0, tmp_dest);
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++) dest[j * stride + i] = tmp_dest[j * 4 + i];
+  int i, j;
+  for (i = 0; i < 4; i++)
+    for (j = 0; j < 4; j++) dest[j * stride + i] = tmp_dest[j * 4 + i];
 }
 
 #define TRANSPOSE8x8(in0, in1, in2, in3, in4, in5, in6, in7, out0, out1, out2, \
