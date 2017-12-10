@@ -394,7 +394,7 @@ class TransTestBase {
     vpx_usec_timer_mark(&timer);
 
     const int elapsed_time = static_cast<int>(vpx_usec_timer_elapsed(&timer));
-    printf("%s[%12d runs]: %d us\n", name, times, elapsed_time);
+    printf("[%12d runs]: %d us\n", times, elapsed_time);
   }
 
   FhtFuncRef fwd_txfm_ref;
