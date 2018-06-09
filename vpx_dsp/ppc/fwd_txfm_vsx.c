@@ -13,24 +13,68 @@
 #include "vpx_dsp/fwd_txfm.h"
 
 void vpx_fdct4x4_one_pass(const tran_high_t *input, tran_low_t *output) {
-  int i;
-  for (i = 0; i < 4; ++i) {
-    // Transform.
-    tran_high_t step[4];       // canbe16
-    tran_high_t temp1, temp2;  // needs32
-    step[0] = input[i * 4 + 0] + input[i * 4 + 3];
-    step[1] = input[i * 4 + 1] + input[i * 4 + 2];
-    step[2] = input[i * 4 + 1] - input[i * 4 + 2];
-    step[3] = input[i * 4 + 0] - input[i * 4 + 3];
-    temp1 = (step[0] + step[1]) * cospi_16_64;
-    temp2 = (step[0] - step[1]) * cospi_16_64;
-    output[i * 4 + 0] = (tran_low_t)fdct_round_shift(temp1);
-    output[i * 4 + 2] = (tran_low_t)fdct_round_shift(temp2);
-    temp1 = step[2] * cospi_24_64 + step[3] * cospi_8_64;
-    temp2 = -step[2] * cospi_8_64 + step[3] * cospi_24_64;
-    output[i * 4 + 1] = (tran_low_t)fdct_round_shift(temp1);
-    output[i * 4 + 3] = (tran_low_t)fdct_round_shift(temp2);
-  }
+  tran_high_t step_0[4];       // canbe16
+  tran_high_t temp_0[4];       // needs32
+  tran_high_t step_1[4];       // canbe16
+  tran_high_t temp_1[4];       // needs32
+  tran_high_t step_2[4];       // canbe16
+  tran_high_t temp_2[4];       // needs32
+  tran_high_t step_3[4];       // canbe16
+  tran_high_t temp_3[4];       // needs32
+
+  // Transform.
+  step_0[0] = input[0 * 4 + 0] + input[0 * 4 + 3];
+  step_0[1] = input[0 * 4 + 1] + input[0 * 4 + 2];
+  step_0[2] = input[0 * 4 + 1] - input[0 * 4 + 2];
+  step_0[3] = input[0 * 4 + 0] - input[0 * 4 + 3];
+  step_1[0] = input[1 * 4 + 0] + input[1 * 4 + 3];
+  step_1[1] = input[1 * 4 + 1] + input[1 * 4 + 2];
+  step_1[2] = input[1 * 4 + 1] - input[1 * 4 + 2];
+  step_1[3] = input[1 * 4 + 0] - input[1 * 4 + 3];
+  step_2[0] = input[2 * 4 + 0] + input[2 * 4 + 3];
+  step_2[1] = input[2 * 4 + 1] + input[2 * 4 + 2];
+  step_2[2] = input[2 * 4 + 1] - input[2 * 4 + 2];
+  step_2[3] = input[2 * 4 + 0] - input[2 * 4 + 3];
+  step_3[0] = input[3 * 4 + 0] + input[3 * 4 + 3];
+  step_3[1] = input[3 * 4 + 1] + input[3 * 4 + 2];
+  step_3[2] = input[3 * 4 + 1] - input[3 * 4 + 2];
+  step_3[3] = input[3 * 4 + 0] - input[3 * 4 + 3];
+
+  temp_0[0] = (step_0[0] + step_0[1]) * cospi_16_64;
+  temp_0[1] = (step_0[0] - step_0[1]) * cospi_16_64;
+  output[0 * 4 + 0] = (tran_low_t)fdct_round_shift(temp_0[0]);
+  output[0 * 4 + 2] = (tran_low_t)fdct_round_shift(temp_0[1]);
+  temp_0[2] = step_0[2] * cospi_24_64 + step_0[3] * cospi_8_64;
+  temp_0[3] = -step_0[2] * cospi_8_64 + step_0[3] * cospi_24_64;
+  output[0 * 4 + 1] = (tran_low_t)fdct_round_shift(temp_0[2]);
+  output[0 * 4 + 3] = (tran_low_t)fdct_round_shift(temp_0[3]);
+  // Transform.
+  temp_1[0] = (step_1[0] + step_1[1]) * cospi_16_64;
+  temp_1[1] = (step_1[0] - step_1[1]) * cospi_16_64;
+  output[1 * 4 + 0] = (tran_low_t)fdct_round_shift(temp_1[0]);
+  output[1 * 4 + 2] = (tran_low_t)fdct_round_shift(temp_1[1]);
+  temp_1[2] = step_1[2] * cospi_24_64 + step_1[3] * cospi_8_64;
+  temp_1[3] = -step_1[2] * cospi_8_64 + step_1[3] * cospi_24_64;
+  output[1 * 4 + 1] = (tran_low_t)fdct_round_shift(temp_1[2]);
+  output[1 * 4 + 3] = (tran_low_t)fdct_round_shift(temp_1[3]);
+  // Transform.
+  temp_2[0] = (step_2[0] + step_2[1]) * cospi_16_64;
+  temp_2[1] = (step_2[0] - step_2[1]) * cospi_16_64;
+  output[2 * 4 + 0] = (tran_low_t)fdct_round_shift(temp_2[0]);
+  output[2 * 4 + 2] = (tran_low_t)fdct_round_shift(temp_2[1]);
+  temp_2[2] = step_2[2] * cospi_24_64 + step_2[3] * cospi_8_64;
+  temp_2[3] = -step_2[2] * cospi_8_64 + step_2[3] * cospi_24_64;
+  output[2 * 4 + 1] = (tran_low_t)fdct_round_shift(temp_2[2]);
+  output[2 * 4 + 3] = (tran_low_t)fdct_round_shift(temp_2[3]);
+  // Transform.
+  temp_3[0] = (step_3[0] + step_3[1]) * cospi_16_64;
+  temp_3[1] = (step_3[0] - step_3[1]) * cospi_16_64;
+  output[3 * 4 + 0] = (tran_low_t)fdct_round_shift(temp_3[0]);
+  output[3 * 4 + 2] = (tran_low_t)fdct_round_shift(temp_3[1]);
+  temp_3[2] = step_3[2] * cospi_24_64 + step_3[3] * cospi_8_64;
+  temp_3[3] = -step_3[2] * cospi_8_64 + step_3[3] * cospi_24_64;
+  output[3 * 4 + 1] = (tran_low_t)fdct_round_shift(temp_3[2]);
+  output[3 * 4 + 3] = (tran_low_t)fdct_round_shift(temp_3[3]);
 }
 
 void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
