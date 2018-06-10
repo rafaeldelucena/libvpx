@@ -18,56 +18,161 @@ void vpx_fdct4x4_one_pass(const tran_high_t *input, tran_low_t *output) {
   tran_high_t a[16]; // needs32
   tran_high_t b[16]; // needs32
 
+  // Old arrangment
+  //step[0] = input[0] + input[3];
+  //step[1] = input[1] + input[2];
+  //step[2] = input[1] - input[2];
+  //step[3] = input[0] - input[3];
+  //step[4] = input[4] + input[7];
+  //step[5] = input[5] + input[6];
+  //step[6] = input[5] - input[6];
+  //step[7] = input[4] - input[7];
+  //step[8] = input[8] + input[11];
+  //step[9] = input[9] + input[10];
+  //step[10] = input[9] - input[10];
+  //step[11] = input[8] - input[11];
+  //step[12] = input[12] + input[15];
+  //step[13] = input[13] + input[14];
+  //step[14] = input[13] - input[14];
+  //step[15] = input[12] - input[15];
+
+  //a[0] = step[0] * cospi_16_64;
+  //a[1] = step[0] * cospi_16_64;
+  //a[2] = step[2] * cospi_24_64;
+  //a[3] = step[2] * -cospi_8_64;
+  //a[4] = step[4] * cospi_16_64;
+  //a[5] = step[4] * cospi_16_64;
+  //a[6] = step[6] * cospi_24_64;
+  //a[7] = step[6] * -cospi_8_64;
+  //a[8] = step[8] * cospi_16_64;
+  //a[9] = step[8] * cospi_16_64;
+  //a[10] = step[10] * cospi_24_64;
+  //a[11] = step[10] * -cospi_8_64;
+  //a[12] = step[12] * cospi_16_64;
+  //a[13] = step[12] * cospi_16_64;
+  //a[14] = step[14] * cospi_24_64;
+  //a[15] = step[14] * -cospi_8_64;
+
+  //b[0] = step[1] * cospi_16_64;
+  //b[1] = step[1] * -cospi_16_64;
+  //b[2] = step[3] * cospi_8_64;
+  //b[3] = step[3] * cospi_24_64;
+  //b[4] = step[5] * cospi_16_64;
+  //b[5] = step[5] * -cospi_16_64;
+  //b[6] = step[7] * cospi_8_64;
+  //b[7] = step[7] * cospi_24_64;
+  //b[8] = step[9] * cospi_16_64;
+  //b[9] = step[9] * -cospi_16_64;
+  //b[10] = step[11] * cospi_8_64;
+  //b[11] = step[11] * cospi_24_64;
+  //b[12] = step[13] * cospi_16_64;
+  //b[13] = step[13] * -cospi_16_64;
+  //b[14] = step[15] * cospi_8_64;
+  //b[15] = step[15] * cospi_24_64;
+
+  //temp[0] = a[0] + b[0];
+  //temp[1] = a[1] + b[1];
+  //temp[2] = a[2] + b[2];
+  //temp[3] = a[3] + b[3];
+  //temp[4] = a[4] + b[4];
+  //temp[5] = a[5] + b[5];
+  //temp[6] = a[6] + b[6];
+  //temp[7] = a[7] + b[7];
+  //temp[8] = a[8] + b[8];
+  //temp[9] = a[9] + b[9];
+  //temp[10] = a[10] + b[10];
+  //temp[11] = a[11] + b[11];
+  //temp[12] = a[12] + b[12];
+  //temp[13] = a[13] + b[13];
+  //temp[14] = a[14] + b[14];
+  //temp[15] = a[15] + b[15];
+
+  //output[0] = (tran_low_t)fdct_round_shift(temp[0]);
+  //output[2] = (tran_low_t)fdct_round_shift(temp[1]);
+  //output[1] = (tran_low_t)fdct_round_shift(temp[2]);
+  //output[3] = (tran_low_t)fdct_round_shift(temp[3]);
+  //output[4] = (tran_low_t)fdct_round_shift(temp[4]);
+  //output[6] = (tran_low_t)fdct_round_shift(temp[5]);
+  //output[5] = (tran_low_t)fdct_round_shift(temp[6]);
+  //output[7] = (tran_low_t)fdct_round_shift(temp[7]);
+  //output[8] = (tran_low_t)fdct_round_shift(temp[8]);
+  //output[10] = (tran_low_t)fdct_round_shift(temp[9]);
+  //output[9] = (tran_low_t)fdct_round_shift(temp[10]);
+  //output[11] = (tran_low_t)fdct_round_shift(temp[11]);
+  //output[12] = (tran_low_t)fdct_round_shift(temp[12]);
+  //output[14] = (tran_low_t)fdct_round_shift(temp[13]);
+  //output[13] = (tran_low_t)fdct_round_shift(temp[14]);
+  //output[15] = (tran_low_t)fdct_round_shift(temp[15]);
+
   step[0] = input[0] + input[3];
-  step[1] = input[1] + input[2];
-  step[2] = input[1] - input[2];
-  step[3] = input[0] - input[3];
+  step[3] = input[1] + input[2];
   step[4] = input[4] + input[7];
-  step[5] = input[5] + input[6];
-  step[6] = input[5] - input[6];
-  step[7] = input[4] - input[7];
+  step[7] = input[5] + input[6];
   step[8] = input[8] + input[11];
-  step[9] = input[9] + input[10];
-  step[10] = input[9] - input[10];
-  step[11] = input[8] - input[11];
+  step[11] = input[9] + input[10];
   step[12] = input[12] + input[15];
-  step[13] = input[13] + input[14];
+  step[15] = input[13] + input[14];
+
+  step[1] = input[0] - input[3];
+  step[2] = input[1] - input[2];
+  step[5] = input[4] - input[7];
+  step[6] = input[5] - input[6];
+  step[10] = input[9] - input[10];
+  step[9] = input[8] - input[11];
   step[14] = input[13] - input[14];
-  step[15] = input[12] - input[15];
+  step[13] = input[12] - input[15];
+
+  //step[0] = input[0] + input[3];
+  //step[2] = input[1] - input[2];
+  //step[4] = input[4] + input[7];
+  //step[6] = input[5] - input[6];
+  //step[8] = input[8] + input[11];
+  //step[10] = input[9] - input[10];
+  //step[12] = input[12] + input[15];
+  //step[14] = input[13] - input[14];
+
+  //step[1] = input[0] - input[3];
+  //step[3] = input[1] + input[2];
+  //step[5] = input[4] - input[7];
+  //step[7] = input[5] + input[6];
+  //step[9] = input[8] - input[11];
+  //step[11] = input[9] + input[10];
+  //step[13] = input[12] - input[15];
+  //step[15] = input[13] + input[14];
+
+  b[0] = step[3] * cospi_16_64;
+  b[1] = step[1] * cospi_8_64;
+  b[2] = step[3] * -cospi_16_64;
+  b[3] = step[1] * cospi_24_64;
+  b[4] = step[7] * cospi_16_64;
+  b[5] = step[5] * cospi_8_64;
+  b[6] = step[7] * -cospi_16_64;
+  b[7] = step[5] * cospi_24_64;
+  b[8] = step[11] * cospi_16_64;
+  b[9] = step[9] * cospi_8_64;
+  b[10] = step[11] * -cospi_16_64;
+  b[11] = step[9] * cospi_24_64;
+  b[12] = step[15] * cospi_16_64;
+  b[13] = step[13] * cospi_8_64;
+  b[14] = step[15] * -cospi_16_64;
+  b[15] = step[13] * cospi_24_64;
 
   a[0] = step[0] * cospi_16_64;
-  a[1] = step[0] * cospi_16_64;
-  a[2] = step[2] * cospi_24_64;
+  a[1] = step[2] * cospi_24_64;
+  a[2] = step[0] * cospi_16_64;
   a[3] = step[2] * -cospi_8_64;
   a[4] = step[4] * cospi_16_64;
-  a[5] = step[4] * cospi_16_64;
-  a[6] = step[6] * cospi_24_64;
+  a[5] = step[6] * cospi_24_64;
+  a[6] = step[4] * cospi_16_64;
   a[7] = step[6] * -cospi_8_64;
   a[8] = step[8] * cospi_16_64;
-  a[9] = step[8] * cospi_16_64;
-  a[10] = step[10] * cospi_24_64;
+  a[9] = step[10] * cospi_24_64;
+  a[10] = step[8] * cospi_16_64;
   a[11] = step[10] * -cospi_8_64;
   a[12] = step[12] * cospi_16_64;
-  a[13] = step[12] * cospi_16_64;
-  a[14] = step[14] * cospi_24_64;
+  a[13] = step[14] * cospi_24_64;
+  a[14] = step[12] * cospi_16_64;
   a[15] = step[14] * -cospi_8_64;
-
-  b[0] = step[1] * cospi_16_64;
-  b[1] = step[1] * -cospi_16_64;
-  b[2] = step[3] * cospi_8_64;
-  b[3] = step[3] * cospi_24_64;
-  b[4] = step[5] * cospi_16_64;
-  b[5] = step[5] * -cospi_16_64;
-  b[6] = step[7] * cospi_8_64;
-  b[7] = step[7] * cospi_24_64;
-  b[8] = step[9] * cospi_16_64;
-  b[9] = step[9] * -cospi_16_64;
-  b[10] = step[11] * cospi_8_64;
-  b[11] = step[11] * cospi_24_64;
-  b[12] = step[13] * cospi_16_64;
-  b[13] = step[13] * -cospi_16_64;
-  b[14] = step[15] * cospi_8_64;
-  b[15] = step[15] * cospi_24_64;
 
   temp[0] = a[0] + b[0];
   temp[1] = a[1] + b[1];
@@ -87,20 +192,20 @@ void vpx_fdct4x4_one_pass(const tran_high_t *input, tran_low_t *output) {
   temp[15] = a[15] + b[15];
 
   output[0] = (tran_low_t)fdct_round_shift(temp[0]);
-  output[2] = (tran_low_t)fdct_round_shift(temp[1]);
-  output[1] = (tran_low_t)fdct_round_shift(temp[2]);
+  output[1] = (tran_low_t)fdct_round_shift(temp[1]);
+  output[2] = (tran_low_t)fdct_round_shift(temp[2]);
   output[3] = (tran_low_t)fdct_round_shift(temp[3]);
   output[4] = (tran_low_t)fdct_round_shift(temp[4]);
-  output[6] = (tran_low_t)fdct_round_shift(temp[5]);
-  output[5] = (tran_low_t)fdct_round_shift(temp[6]);
+  output[5] = (tran_low_t)fdct_round_shift(temp[5]);
+  output[6] = (tran_low_t)fdct_round_shift(temp[6]);
   output[7] = (tran_low_t)fdct_round_shift(temp[7]);
   output[8] = (tran_low_t)fdct_round_shift(temp[8]);
-  output[10] = (tran_low_t)fdct_round_shift(temp[9]);
-  output[9] = (tran_low_t)fdct_round_shift(temp[10]);
+  output[9] = (tran_low_t)fdct_round_shift(temp[9]);
+  output[10] = (tran_low_t)fdct_round_shift(temp[10]);
   output[11] = (tran_low_t)fdct_round_shift(temp[11]);
   output[12] = (tran_low_t)fdct_round_shift(temp[12]);
-  output[14] = (tran_low_t)fdct_round_shift(temp[13]);
-  output[13] = (tran_low_t)fdct_round_shift(temp[14]);
+  output[13] = (tran_low_t)fdct_round_shift(temp[13]);
+  output[14] = (tran_low_t)fdct_round_shift(temp[14]);
   output[15] = (tran_low_t)fdct_round_shift(temp[15]);
 }
 
@@ -120,22 +225,39 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // Do the two transform/transpose passes
 
   // Load inputs.
-  in[0] = input[0 * stride] * 16;
-  in[1] = input[1 * stride] * 16;
-  in[2] = input[2 * stride] * 16;
-  in[3] = input[3 * stride] * 16;
-  in[4] = input[0 * stride + 1] * 16;
-  in[5] = input[1 * stride + 1] * 16;
-  in[6] = input[2 * stride + 1] * 16;
-  in[7] = input[3 * stride + 1] * 16;
-  in[8] = input[0 * stride + 2] * 16;
-  in[9] = input[1 * stride + 2] * 16;
-  in[10] = input[2 * stride + 2] * 16;
-  in[11] = input[3 * stride + 2] * 16;
-  in[12] = input[0 * stride + 3] * 16;
-  in[13] = input[1 * stride + 3] * 16;
-  in[14] = input[2 * stride + 3] * 16;
-  in[15] = input[3 * stride + 3] * 16;
+  in[0] = input[0 * stride];
+  in[1] = input[1 * stride];
+  in[2] = input[2 * stride];
+  in[3] = input[3 * stride];
+  in[4] = input[0 * stride + 1];
+  in[5] = input[1 * stride + 1];
+  in[6] = input[2 * stride + 1];
+  in[7] = input[3 * stride + 1];
+  in[8] = input[0 * stride + 2];
+  in[9] = input[1 * stride + 2];
+  in[10] = input[2 * stride + 2];
+  in[11] = input[3 * stride + 2];
+  in[12] = input[0 * stride + 3];
+  in[13] = input[1 * stride + 3];
+  in[14] = input[2 * stride + 3];
+  in[15] = input[3 * stride + 3];
+
+  in[0] = in[0] * 16;
+  in[1] = in[1] * 16;
+  in[2] = in[2] * 16;
+  in[3] = in[3] * 16;
+  in[4] = in[4] * 16;
+  in[5] = in[5] * 16;
+  in[6] = in[6] * 16;
+  in[7] = in[7] * 16;
+  in[8] = in[8] * 16;
+  in[9] = in[9] * 16;
+  in[10] = in[10] * 16;
+  in[11] = in[11] * 16;
+  in[12] = in[12] * 16;
+  in[13] = in[13] * 16;
+  in[14] = in[14] * 16;
+  in[15] = in[15] * 16;
 
   if (in[0]) {
     ++in[0];
