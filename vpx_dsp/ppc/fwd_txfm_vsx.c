@@ -113,97 +113,73 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // in normal/row positions).
   // We need an intermediate buffer between passes.
   tran_low_t intermediate[4 * 4];
+
+  tran_high_t in[4 * 4]; // canbe16
+  tran_high_t transposed[4 * 4]; // canbe16
+
   // Do the two transform/transpose passes
-  {
-    tran_high_t in[4 * 4];    // canbe16
-    tran_high_t *in_high = in;
-    // Load inputs.
-    in_high[0] = input[0 * stride] * 16;
-    if (in_high[0]) {
-      ++in_high[0];
-    }
-    in_high[1] = input[1 * stride] * 16;
-    in_high[2] = input[2 * stride] * 16;
-    in_high[3] = input[3 * stride] * 16;
 
-    in_high += 4;
+  // Load inputs.
+  in[0] = input[0 * stride] * 16;
+  in[1] = input[1 * stride] * 16;
+  in[2] = input[2 * stride] * 16;
+  in[3] = input[3 * stride] * 16;
+  in[4] = input[0 * stride + 1] * 16;
+  in[5] = input[1 * stride + 1] * 16;
+  in[6] = input[2 * stride + 1] * 16;
+  in[7] = input[3 * stride + 1] * 16;
+  in[8] = input[0 * stride + 2] * 16;
+  in[9] = input[1 * stride + 2] * 16;
+  in[10] = input[2 * stride + 2] * 16;
+  in[11] = input[3 * stride + 2] * 16;
+  in[12] = input[0 * stride + 3] * 16;
+  in[13] = input[1 * stride + 3] * 16;
+  in[14] = input[2 * stride + 3] * 16;
+  in[15] = input[3 * stride + 3] * 16;
 
-    in_high[0] = input[0 * stride + 1] * 16;
-    in_high[1] = input[1 * stride + 1] * 16;
-    in_high[2] = input[2 * stride + 1] * 16;
-    in_high[3] = input[3 * stride + 1] * 16;
-
-    in_high += 4;
-
-    in_high[0] = input[0 * stride + 2] * 16;
-    in_high[1] = input[1 * stride + 2] * 16;
-    in_high[2] = input[2 * stride + 2] * 16;
-    in_high[3] = input[3 * stride + 2] * 16;
-
-    in_high += 4;
-
-    in_high[0] = input[0 * stride + 3] * 16;
-    in_high[1] = input[1 * stride + 3] * 16;
-    in_high[2] = input[2 * stride + 3] * 16;
-    in_high[3] = input[3 * stride + 3] * 16;
-
-    // Transform.
-    vpx_fdct4x4_one_pass(in, intermediate);
+  if (in[0]) {
+    ++in[0];
   }
+
+  // Transform.
+  vpx_fdct4x4_one_pass(in, intermediate);
+
   // Do next column (which is a transposed row in second/horizontal pass)
-  {
-    tran_high_t in[4 * 4];    // canbe16
-    tran_high_t *in_high = in;
-    // Load inputs.
-    in_high[0] = intermediate[0 * 4];
-    in_high[1] = intermediate[1 * 4];
-    in_high[2] = intermediate[2 * 4];
-    in_high[3] = intermediate[3 * 4];
+  // Transpose
+  transposed[0] = intermediate[0];
+  transposed[1] = intermediate[4];
+  transposed[2] = intermediate[8];
+  transposed[3] = intermediate[12];
+  transposed[4] = intermediate[1];
+  transposed[5] = intermediate[5];
+  transposed[6] = intermediate[9];
+  transposed[7] = intermediate[13];
+  transposed[8] = intermediate[2];
+  transposed[9] = intermediate[6];
+  transposed[10] = intermediate[10];
+  transposed[11] = intermediate[14];
+  transposed[12] = intermediate[3];
+  transposed[13] = intermediate[7];
+  transposed[14] = intermediate[11];
+  transposed[15] = intermediate[15];
 
-    in_high +=4;
+  // Transform.
+  vpx_fdct4x4_one_pass(transposed, output);
 
-    in_high[0] = intermediate[0 * 4 + 1];
-    in_high[1] = intermediate[1 * 4 + 1];
-    in_high[2] = intermediate[2 * 4 + 1];
-    in_high[3] = intermediate[3 * 4 + 1];
-
-    in_high +=4;
-
-    in_high[0] = intermediate[0 * 4 + 2];
-    in_high[1] = intermediate[1 * 4 + 2];
-    in_high[2] = intermediate[2 * 4 + 2];
-    in_high[3] = intermediate[3 * 4 + 2];
-
-    in_high +=4;
-
-    in_high[0] = intermediate[0 * 4 + 3];
-    in_high[1] = intermediate[1 * 4 + 3];
-    in_high[2] = intermediate[2 * 4 + 3];
-    in_high[3] = intermediate[3 * 4 + 3];
-
-    // Transform.
-    vpx_fdct4x4_one_pass(in, output);
-  }
-
-  {
-    output[0 + 0 * 4] = (output[0 + 0 * 4] + 1) >> 2;
-    output[1 + 0 * 4] = (output[1 + 0 * 4] + 1) >> 2;
-    output[2 + 0 * 4] = (output[2 + 0 * 4] + 1) >> 2;
-    output[3 + 0 * 4] = (output[3 + 0 * 4] + 1) >> 2;
-
-    output[0 + 1 * 4] = (output[0 + 1 * 4] + 1) >> 2;
-    output[1 + 1 * 4] = (output[1 + 1 * 4] + 1) >> 2;
-    output[2 + 1 * 4] = (output[2 + 1 * 4] + 1) >> 2;
-    output[3 + 1 * 4] = (output[3 + 1 * 4] + 1) >> 2;
-
-    output[0 + 2 * 4] = (output[0 + 2 * 4] + 1) >> 2;
-    output[1 + 2 * 4] = (output[1 + 2 * 4] + 1) >> 2;
-    output[2 + 2 * 4] = (output[2 + 2 * 4] + 1) >> 2;
-    output[3 + 2 * 4] = (output[3 + 2 * 4] + 1) >> 2;
-
-    output[0 + 3 * 4] = (output[0 + 3 * 4] + 1) >> 2;
-    output[1 + 3 * 4] = (output[1 + 3 * 4] + 1) >> 2;
-    output[2 + 3 * 4] = (output[2 + 3 * 4] + 1) >> 2;
-    output[3 + 3 * 4] = (output[3 + 3 * 4] + 1) >> 2;
-  }
+  output[0] = (output[0] + 1) >> 2;
+  output[1] = (output[1] + 1) >> 2;
+  output[2] = (output[2] + 1) >> 2;
+  output[3] = (output[3] + 1) >> 2;
+  output[4] = (output[4] + 1) >> 2;
+  output[5] = (output[5] + 1) >> 2;
+  output[6] = (output[6] + 1) >> 2;
+  output[7] = (output[7] + 1) >> 2;
+  output[8] = (output[8] + 1) >> 2;
+  output[9] = (output[9] + 1) >> 2;
+  output[10] = (output[10] + 1) >> 2;
+  output[11] = (output[11] + 1) >> 2;
+  output[12] = (output[12] + 1) >> 2;
+  output[13] = (output[13] + 1) >> 2;
+  output[14] = (output[14] + 1) >> 2;
+  output[15] = (output[15] + 1) >> 2;
 }
