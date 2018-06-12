@@ -98,4 +98,36 @@ static INLINE void vpx_transpose_s16_8x8(int16x8_t v[8]) {
   // v[7]: 07 17 27 37 47 57 67 77
 }
 
+static INLINE void vpx_transpose_s32_4x4(int32x4_t v[4]) {
+  int32x4_t b0, b1, b2, b3;
+
+  // Example, starting with:
+  // v[0]: 00 01 02 03
+  // v[1]: 10 11 12 13
+  // v[2]: 20 21 22 23
+  // v[3]: 30 31 32 33
+
+  b0 = vec_mergeh(v[0], v[2]);
+  b1 = vec_mergel(v[0], v[2]);
+  b2 = vec_mergeh(v[1], v[3]);
+  b3 = vec_mergel(v[1], v[3]);
+
+  // After first merge operation
+  // b0: 00 20 01 21
+  // b1: 02 22 03 23
+  // b2: 10 30 11 31
+  // b3: 12 32 13 33
+
+  v[0] = vec_mergeh(b0, b2);
+  v[1] = vec_mergel(b0, b2);
+  v[2] = vec_mergeh(b1, b3);
+  v[3] = vec_mergel(b1, b3);
+
+  // After second merge operation
+  // v[0]: 00 10 20 30
+  // v[1]: 01 11 21 31
+  // v[2]: 02 12 22 32
+  // v[3]: 03 13 23 33
+}
+
 #endif  // VPX_DSP_PPC_TRANSPOSE_VSX_H_
