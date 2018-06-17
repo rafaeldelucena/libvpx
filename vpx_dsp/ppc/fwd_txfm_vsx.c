@@ -104,39 +104,32 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   // in normal/row positions).
   // We need an intermediate buffer between passes.
 
-  tran_low_t tmp[4 * 4]; // canbe16
-
   int16x8_t v[2];
   int16x8_t v_out[2];
   int32x4_t v_intermediate[4];
   int32x4_t last[4];
+  int32x4_t x[4];
 
+  uint16x8_t c = vec_splat_u16(4);
   int32x4_t one = vec_splat_s32(1);
   uint32x4_t two = vec_splat_u32(2);
-  uint16x8_t c = vec_splat_u16(4);
 
   // Do the two transform/transpose passes
 
-  // Load inputs.
-  tmp[0] = input[0 * stride];
-  tmp[1] = input[1 * stride];
-  tmp[2] = input[2 * stride];
-  tmp[3] = input[3 * stride];
-  tmp[4] = input[0 * stride + 1];
-  tmp[5] = input[1 * stride + 1];
-  tmp[6] = input[2 * stride + 1];
-  tmp[7] = input[3 * stride + 1];
-  tmp[8] = input[0 * stride + 2];
-  tmp[9] = input[1 * stride + 2];
-  tmp[10] = input[2 * stride + 2];
-  tmp[11] = input[3 * stride + 2];
-  tmp[12] = input[0 * stride + 3];
-  tmp[13] = input[1 * stride + 3];
-  tmp[14] = input[2 * stride + 3];
-  tmp[15] = input[3 * stride + 3];
+  x[0] = unpack_u16_to_s32_h(vec_vsx_ld(0, input));
+  x[1] = unpack_u16_to_s32_h(vec_vsx_ld(0, input + stride));
+  x[2] = unpack_u16_to_s32_h(vec_vsx_ld(0, input + stride * 2));
+  x[3] = unpack_u16_to_s32_h(vec_vsx_ld(0, input + stride * 3));
 
-  v[0] = vec_vsx_ld(0, tmp);
-  v[1] = vec_vsx_ld(0, tmp + 8);
+  vpx_transpose_s32_4x4(x);
+
+#ifdef WORDS_BIGENDIAN
+  v[0] = vec_pack(x[1], x[0]);
+  v[1] = vec_pack(x[3], x[2]);
+#else
+  v[0] = vec_pack(x[0], x[1]);
+  v[1] = vec_pack(x[2], x[3]);
+#endif // WORDS_BIGENDIAN
 
   v[0] = vec_sl(v[0], c);
   v[1] = vec_sl(v[1], c);
@@ -144,6 +137,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   if (v[0][0]) {
     ++v[0][0];
   }
+
 
   // Transform.
   vpx_fdct4x4_one_pass(v, v_intermediate);
@@ -158,8 +152,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   v_out[0] = vec_pack(v_intermediate[1], v_intermediate[0]);
   v_out[1] = vec_pack(v_intermediate[3], v_intermediate[2]);
 #else
-  v_out[0] = vec_packs(v_intermediate[0], v_intermediate[1]);
-  v_out[1] = vec_packs(v_intermediate[2], v_intermediate[3]);
+  v_out[0] = vec_pack(v_intermediate[0], v_intermediate[1]);
+  v_out[1] = vec_pack(v_intermediate[2], v_intermediate[3]);
 #endif // WORDS_BIGENDIAN
 
   // Transform.
@@ -179,8 +173,8 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   v_out[0] = vec_pack(last[1], last[0]);
   v_out[1] = vec_pack(last[3], last[2]);
 #else
-  v_out[0] = vec_packs(last[0], last[1]);
-  v_out[1] = vec_packs(last[2], last[3]);
+  v_out[0] = vec_pack(last[0], last[1]);
+  v_out[1] = vec_pack(last[2], last[3]);
 #endif // WORDS_BIGENDIAN
 
   vec_vsx_st(v_out[0], 0, output);
