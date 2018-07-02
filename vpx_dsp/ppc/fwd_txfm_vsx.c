@@ -96,14 +96,6 @@ static INLINE void vpx_fdct4x4_one_pass(const int16x8_t input[2], int32x4_t outp
 }
 
 void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
-  // The 2D transform is done with two passes which are actually pretty
-  // similar. In the first one, we transform the columns and transpose
-  // the results. In the second one, we transform the rows. To achieve that,
-  // as the first pass results are transposed, we transpose the columns (that
-  // is the transposed rows) and transpose the results (so that it goes back
-  // in normal/row positions).
-  // We need an intermediate buffer between passes.
-
   int16x8_t v[2];
   int16x8_t v_out[2];
   int32x4_t v_intermediate[4];
@@ -113,8 +105,6 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   uint16x8_t c = vec_splat_u16(4);
   int32x4_t one = vec_splat_s32(1);
   uint32x4_t two = vec_splat_u32(2);
-
-  // Do the two transform/transpose passes
 
   x[0] = unpack_u16_to_s32_h(vec_vsx_ld(0, input));
   x[1] = unpack_u16_to_s32_h(vec_vsx_ld(0, input + stride));
@@ -138,12 +128,7 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
     ++v[0][0];
   }
 
-  // Transform.
   vpx_fdct4x4_one_pass(v, v_intermediate);
-
-
-  // Do next column (which is a transposed row in second/horizontal pass)
-  // Transpose
 
   vpx_transpose_s32_4x4(v_intermediate);
 
@@ -155,7 +140,6 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   v_out[1] = vec_pack(v_intermediate[2], v_intermediate[3]);
 #endif // WORDS_BIGENDIAN
 
-  // Transform.
   vpx_fdct4x4_one_pass(v_out, last);
 
   last[0] = vec_add(last[0], one);
