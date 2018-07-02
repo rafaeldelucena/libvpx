@@ -17,6 +17,7 @@
 #include "./vp9_rtcd.h"
 #include "./vpx_dsp_rtcd.h"
 #include "test/acm_random.h"
+#include "test/bench.h"
 #include "test/buffer.h"
 #include "test/clear_system_state.h"
 #include "test/register_state_check.h"
@@ -412,28 +413,6 @@ class TransTestBase : public ::testing::TestWithParam<DctParam> {
     }
   }
 
-  void RunSpeedCheck(int times) {
-    Buffer<int16_t> input_block =
-      Buffer<int16_t>(size_, size_, 8, size_ == 4 ? 0 : 16);
-    ASSERT_TRUE(input_block.Init());
-
-    Buffer<tran_low_t> output_block =
-      Buffer<tran_low_t>(size_, size_, 0, 16);
-    ASSERT_TRUE(output_block.Init());
-
-    int i;
-    vpx_usec_timer timer;
-
-    vpx_usec_timer_start(&timer);
-    for (i = 0; i < times; ++i) {
-      ASM_REGISTER_STATE_CHECK(RunFwdTxfm(input_block, &output_block));
-    }
-    vpx_usec_timer_mark(&timer);
-
-    const int elapsed_time = static_cast<int>(vpx_usec_timer_elapsed(&timer));
-    printf("[%12d runs]: %d us\n", times, elapsed_time);
-  }
-
   FhtFunc fwd_txfm_;
   FhtFuncRef fwd_txfm_ref;
   IhtWithBdFunc inv_txfm_;
@@ -451,9 +430,21 @@ class TransTestBase : public ::testing::TestWithParam<DctParam> {
 
 /* -------------------------------------------------------------------------- */
 
-class TransDCT : public TransTestBase {
+class TransDCT : public TransTestBase,
+                 public AbstractBench {
  public:
-  TransDCT() { fwd_txfm_ref = fdct_ref; }
+  TransDCT() : input_(size_, size_, 0, 16),
+               output_(size_, size_, 0, 16) {
+    fwd_txfm_ref = fdct_ref;
+  }
+
+ protected:
+  virtual void Run() {
+    ASM_REGISTER_STATE_CHECK(RunFwdTxfm(input_, &output_));
+  }
+
+  Buffer<int16_t> input_;
+  Buffer<tran_low_t> output_;
 };
 
 TEST_P(TransDCT, AccuracyCheck) {
@@ -473,9 +464,11 @@ TEST_P(TransDCT, MemCheck) { RunMemCheck(); }
 TEST_P(TransDCT, InvAccuracyCheck) { RunInvAccuracyCheck(1); }
 
 TEST_P(TransDCT, DISABLED_Speed) {
-  RunSpeedCheck(10);
-  RunSpeedCheck(10000);
-  RunSpeedCheck(10000000);
+  ASSERT_TRUE(input_.Init());
+  ASSERT_TRUE(output_.Init());
+
+  RunNTimes(1000000);
+  PrintMedian("FDCT4x4");
 }
 
 static const FuncInfo dct_c_func_info[] = {

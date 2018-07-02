@@ -36,7 +36,7 @@ static INLINE int32x4_t fdct_vector_round_shift(int32x4_t input) {
   return vec_sra(sum, dct_const_1);
 }
 
-void vpx_fdct4x4_one_pass(const int16x8_t input[2], int32x4_t output[4]) {
+static INLINE void vpx_fdct4x4_one_pass(const int16x8_t input[2], int32x4_t output[4]) {
   int16x8_t v[2];
   int16x8_t s[2];
   int16x8_t a[2];
@@ -137,7 +137,6 @@ void vpx_fdct4x4_vsx(const int16_t *input, tran_low_t *output, int stride) {
   if (v[0][0]) {
     ++v[0][0];
   }
-
 
   // Transform.
   vpx_fdct4x4_one_pass(v, v_intermediate);
